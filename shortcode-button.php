@@ -116,6 +116,7 @@ class _Shortcode_Button_ {
 		}
 
 		wp_enqueue_script( $this->handle );
+		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 		wp_localize_script( $this->handle, 'shortcodeButtonsl10n', self::$buttons_data );
 
 		self::$buttons_data = array();
