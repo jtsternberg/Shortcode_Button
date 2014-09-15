@@ -98,3 +98,16 @@ function shortcode_button_only_pages() {
 	return true;
 }
 ```
+
+![button hover](http://dsgnwrks.pro/file-drop/images/button-hover.png)
+*Button hover*
+
+![button-click-show-modal](http://dsgnwrks.pro/file-drop/images/button-click-show-modal.png)
+*Click button and open modal*
+
+![button-click-show-modal](http://dsgnwrks.pro/file-drop/images/submit-add-shortcode.png)
+*Submitted form inserts shortcode with params*
+
+![button-click-show-modal](http://dsgnwrks.pro/file-drop/images/text-tab-quicktag-button.png)
+*Text tab quicktag button (operates identically)*
+
