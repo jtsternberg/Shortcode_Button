@@ -4,9 +4,9 @@ WordPress Shortcode Button
 Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with CMB2.
 
 #### Todo:
-* Properly style CMB fields in modal
+* Properly style CMB2 fields in modal
 
-##Example Use
+### Example Use
 
 ```php
 <?php
@@ -101,6 +101,8 @@ function shortcode_button_only_pages() {
 	return true;
 }
 ```
+
+### Screenshots
 
 ![button hover](http://dsgnwrks.pro/file-drop/images/button-hover.png)
 *Button hover*
