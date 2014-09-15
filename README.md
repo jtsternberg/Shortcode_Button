@@ -1,7 +1,10 @@
 WordPress Shortcode Button
 ================
 
-Tinymce and Quicktag buttons for outputting shortcodes. Built to work with CMB2.
+Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with CMB2.
+
+#### Todo:
+* Properly style CMB fields in modal
 
 ##Example Use
 
