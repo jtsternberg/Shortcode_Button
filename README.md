@@ -17,18 +17,22 @@ $button_slug = 'shortcode_name';
 
 // Set up the button data that will be passed to the javascript files
 $js_button_data = array(
-	// Can use a dashicon class or use an image url (20x20)
-	'icon'           => 'dashicons-admin-appearance',
+	// Actual quicktag button text (on the text edit tab)
 	'qt_button_text' => __( 'Shortcode Button', 'shortcode-button' ),
+	// Tinymce button hover tooltip (on the html edit tab)
 	'button_tooltip' => __( 'Shortcode Button', 'shortcode-button' ),
+	// Tinymce button icon. Use a dashicon class or a 20x20 image url
+	'icon'           => 'dashicons-admin-appearance',
 
 	// Optional parameters
 	'author'         => 'Justin Sternberg',
 	'authorurl'      => 'http://dsgnwrks.pro',
 	'infourl'        => 'https://github.com/jtsternberg/Shortcode_Button',
 	'version'        => '1.0.0',
-	'l10ncancel'     => __( 'Cancel' ),
-	'l10ninsert'     => __( 'Insert Shortcode' ),
+	
+	// Use your own textdomain
+	'l10ncancel'     => __( 'Cancel', 'shortcode-button' ),
+	'l10ninsert'     => __( 'Insert Shortcode', 'shortcode-button' ),
 );
 
 // Optional additional parameters
