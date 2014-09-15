@@ -70,7 +70,7 @@ function shortcode_button_cmb_config( $button_data ) {
 			array(
 				'name'    => __( 'Test Text Small', 'shortcode-button' ),
 				'desc'    => __( 'field description (optional)', 'shortcode-button' ),
-				'default' => 'default shortcode param value',
+				'default' => __( 'default shortcode param value', 'shortcode-button' ),
 				'id'      => 'shortcode_param',
 				'type'    => 'text_small',
 			),
