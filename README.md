@@ -17,6 +17,7 @@ $button_slug = 'shortcode_name';
 
 // Set up the button data that will be passed to the javascript files
 $js_button_data = array(
+	// Can use a dashicon class or use an image url (20x20)
 	'icon'           => 'dashicons-admin-appearance',
 	'qt_button_text' => __( 'Shortcode Button', 'shortcode-button' ),
 	'button_tooltip' => __( 'Shortcode Button', 'shortcode-button' ),
