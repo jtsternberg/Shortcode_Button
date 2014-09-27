@@ -133,18 +133,20 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 			buttons[ params.l10ncancel ] = btn.cancel;
 			buttons[ params.l10ninsert ] = btn.insert;
 
-			btn.$.modal.dialog({
-				'dialogClass'   : 'wp-dialog',
+			var args = {
+				'dialogClass'   : params.modalClass,
 				'modal'         : true,
 				'autoOpen'      : false,
 				'draggable'     : false,
-				'height'        : 'auto',
-				'width'         : 395,
+				'height'        : params.modalHeight,
+				'width'         : params.modalWidth,
 				'closeOnEscape' : true,
 				'buttons'       : buttons,
 				'create'        : btn.create,
 				'close'         : btn.close
-			});
+			};
+
+			btn.$.modal.dialog( args );
 		};
 
 		btn.open = function( isVisual ) {

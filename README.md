@@ -32,10 +32,15 @@ $js_button_data = array(
 	'authorurl'      => 'http://dsgnwrks.pro',
 	'infourl'        => 'https://github.com/jtsternberg/Shortcode_Button',
 	'version'        => '1.0.0',
-	
+
 	// Use your own textdomain
 	'l10ncancel'     => __( 'Cancel', 'shortcode-button' ),
 	'l10ninsert'     => __( 'Insert Shortcode', 'shortcode-button' ),
+
+	// Optional modal settings override
+	// 'dialogClass' => 'wp-dialog',
+	// 'modalHeight' => 'auto',
+	// 'width'       => 500,
 );
 
 // Optional additional parameters
@@ -115,3 +120,13 @@ function shortcode_button_only_pages() {
 
 ![button-click-show-modal](http://dsgnwrks.pro/file-drop/images/text-tab-quicktag-button.png)
 *Text tab quicktag button (operates identically)*
+
+
+#### Changelog
+
+* 0.1.1
+	* Add override options for dialog modal's class, height, and width.
+	* Better styling for CMB2 fields.
+
+* 0.1.0
+	* Hello World!

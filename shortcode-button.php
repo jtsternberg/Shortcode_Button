@@ -39,6 +39,9 @@ class _Shortcode_Button_ {
 			'l10ncancel'     => __( 'Cancel' ),
 			'l10ninsert'     => __( 'Insert Shortcode' ),
 			'slug'           => '',
+			'modalClass'     => 'wp-dialog',
+			'modalHeight'    => 'auto',
+			'modalWidth'     => 500,
 		) );
 
 		$this->args = wp_parse_args( $args, array(
@@ -137,15 +140,15 @@ class _Shortcode_Button_ {
 		$callback    = $this->form_callback();
 		$cmb_config  = $this->get_cmb_config();
 		$is_callable = is_callable( $callback );
-		$is_array    = ! empty( $cmb_config );
+		$is_cmb      = ! empty( $cmb_config );
 
-		if ( ! $is_callable && ! $is_array ) {
+		if ( ! $is_callable && ! $is_cmb ) {
 			return;
 		}
 
 		?>
 		<div class="wp-sc-buttons-form" style="display: none; padding: 0 10px 20px;" id="<?php echo esc_attr( $this->button_slug ); ?>-form" title="<?php echo esc_attr( $this->button_data['button_tooltip'] ); ?>">
-			<?php if ( $is_array ) {
+			<?php if ( $is_cmb ) {
 				$this->do_cmb_form();
 			} else {
 				echo call_user_func( $callback, $this->button_data, $this->args );
@@ -209,6 +212,31 @@ class _Shortcode_Button_ {
 
 		$form = '<form class="cmb-form" method="post" id="%1$s" enctype="multipart/form-data" encoding="multipart/form-data"><input type="hidden" name="object_id" value="%2$s">%3$s</form>';
 		cmb2_metabox_form( $this->get_cmb_object(), $this->button_slug, array( 'form_format' => $form ) );
+		?>
+		<style type="text/css" media="screen">
+		.cmb-form {
+			padding-left: 6px;
+			padding-right: 6px;
+		}
+		.ui-dialog .cmb-th {
+			width: 100%;
+		}
+		.ui-dialog .cmb-th,
+		.ui-dialog .cmb2-metabox > .cmb-row:first-of-type > .cmb-th,
+		.ui-dialog .cmb2-metabox .cmb-field-list > .cmb-row:first-of-type > .cmb-th {
+			padding: 1em 0 0 1px;
+		}
+		.ui-dialog .cmb-td {
+			padding: .2em 0 0;
+		}
+		.ui-dialog .cmb-type-checkbox .cmb-td {
+			padding: 1.2em 0 0 0;
+		}
+		.ui-dialog .cmb-type-checkbox .cmb-th {
+			width: 300px;
+		}
+		</style>
+		<?php
 	}
 
 	/**
@@ -321,7 +349,7 @@ class _Shortcode_Button_ {
 	 */
 	function filter_form_fields( $fields, $unmodified_fields = array() ) {
 		// Pass updated form values through a filter and return
-		return (array) apply_filters( "{$this->button_slug}_shortcode_fields", $fields, $this, empty( $unmodified_fields ) ? $filtered_fields : $all_fields );
+		return (array) apply_filters( "{$this->button_slug}_shortcode_fields", $fields, $this, empty( $unmodified_fields ) ? $fields : $unmodified_fields );
 	}
 
 	/**
