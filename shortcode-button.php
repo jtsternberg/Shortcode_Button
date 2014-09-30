@@ -235,6 +235,9 @@ class _Shortcode_Button_ {
 		.ui-dialog .cmb-type-checkbox .cmb-th {
 			width: 300px;
 		}
+		.ui-dialog .cmb-th + .cmb-td {
+			float: none;
+		}
 		</style>
 		<?php
 	}
