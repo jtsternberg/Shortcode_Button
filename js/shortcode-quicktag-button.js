@@ -163,15 +163,13 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 
 	var qt = {};
 
-	var qtmodalopen = function() { button.open(); };
-
 	for (var i = buttons.length - 1; i >= 0; i--) {
 		var button = new Button( buttons[i] );
 
 		button.init();
 
 		// text editor quicktags button
-		QTags.addButton( button.params.slug, button.params.qt_button_text, qtmodalopen );
+		QTags.addButton( button.params.slug, button.params.qt_button_text, button.open );
 
 		qt[ button.params.slug ] = button;
 	}
