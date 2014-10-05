@@ -317,8 +317,11 @@ class _Shortcode_Button_ {
 
 		$cmb->process_fields();
 
+		// output buffer on the action so we don't pollute our JSON response
+		ob_start();
 		// Preserve CMB action
 		do_action( 'cmb2_save_options-page_fields', $object_id, $cmb->cmb_id, $cmb->updated, $cmb );
+		ob_end_clean();
 
 		$updated_fields = cmb2_options( $object_id )->get_options();
 		$cmb_config     = $this->get_cmb_config();
