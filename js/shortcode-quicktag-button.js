@@ -152,7 +152,7 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 		btn.open = function( isVisual ) {
 			btn.cache();
 
-			btn.isVisual = !! isVisual;
+			btn.isVisual = true === isVisual;
 
 			btn.$.modal.dialog( 'open' );
 		};
