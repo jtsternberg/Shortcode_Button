@@ -117,6 +117,10 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 		btn.insertCallback = function( shortcode_params ) {
 			var shortcodeToInsert = btn.buildShortCode( shortcode_params );
 
+			if ( ! shortcodeToInsert ) {
+				return;
+			}
+
 			if ( btn.isVisual && scbuttons.visualmode[ params.slug ] ) {
 				scbuttons.visualmode[ params.slug ].execCommand( 'mceInsertContent', 0, shortcodeToInsert );
 			} else {
