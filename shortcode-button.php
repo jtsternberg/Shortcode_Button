@@ -88,7 +88,7 @@ class _Shortcode_Button_ {
 
 	// register it with tinymce
 	public function register_button( $buttons ) {
-		array_push( $buttons, $this->button_slug );
+		$buttons[] = $this->button_slug;
 		return $buttons;
 	}
 
@@ -120,7 +120,7 @@ class _Shortcode_Button_ {
 
 		wp_enqueue_script( $this->handle );
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
-		wp_localize_script( $this->handle, 'shortcodeButtonsl10n', self::$buttons_data );
+		wp_localize_script( $this->handle, 'shortcodeButtonsl10n', array_reverse( self::$buttons_data ) );
 
 		self::$buttons_data = array();
 	}
