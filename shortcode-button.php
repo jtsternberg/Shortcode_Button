@@ -47,7 +47,7 @@ class _Shortcode_Button_ {
 		$this->args = wp_parse_args( $args, array(
 			'cmb_metabox_config'    => array(),
 			'form_display_callback' => '',
-			'scripts_url'           => str_ireplace( ABSPATH, site_url( '/' ), trailingslashit( dirname( __FILE__ ) ) ) . 'js',
+			'scripts_url'           => apply_filters( 'shortcode_button_js_url', set_url_scheme( str_ireplace( ABSPATH, site_url( '/' ), trailingslashit( dirname( __FILE__ ) ) . 'js' ) ) ),
 			'conditional_callback'  => false,
 		) );
 
