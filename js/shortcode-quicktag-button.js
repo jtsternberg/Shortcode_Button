@@ -103,13 +103,33 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 
 		btn.buildShortCode = function( shortcode_params ) {
 
-			var shortcode = '['+ params.slug;
+			var shortcode = '['+ params.slug,
+				close_tag = '[/' + params.slug + ']',
+				mce_selection = ( tinymce.activeEditor ) ? tinymce.activeEditor.selection.getContent() : false;
 
 			$.each( shortcode_params, function( key, value ) {
 				shortcode += ' '+ key +'="'+ value +'"';
 			});
 
 			shortcode += ']';
+
+			/**
+			 * Shortcode closings for both quicktags and visual editor.
+			 */
+			if ( mce_selection ) {
+				shortcode += mce_selection + close_tag;
+			} else if ( ! btn.isVisual ) {
+				var canvas = document.getElementById( 'content' ),
+					text = canvas.value,
+					startPos = canvas.selectionStart,
+					endPos = canvas.selectionEnd;
+
+				window.console.log( startPos,endPos );
+				// No need to do all this fancy substring stuff unless we have a selection
+				if ( startPos !== endPos ) {
+					shortcode = text.substring( 0, startPos ) + shortcode + text + close_tag + text.substring( endPos, text.length );
+				}
+			}
 
 			return shortcode;
 		};
