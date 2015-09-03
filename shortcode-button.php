@@ -3,7 +3,7 @@ if ( ! class_exists( '_Shortcode_Button_' ) ) :
 /**
  * Tinymce and Quicktag buttons for outputting shortcodes
  *
- * @version 0.1.0
+ * @version 0.1.1
  */
 class _Shortcode_Button_ {
 
