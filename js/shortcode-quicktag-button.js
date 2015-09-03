@@ -103,9 +103,9 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 
 		btn.buildShortCode = function( shortcode_params ) {
 
-			var shortcode = '['+ params.slug,
-				close_tag = '[/' + params.slug + ']',
-				mce_selection = ( tinymce.activeEditor ) ? tinymce.activeEditor.selection.getContent() : false;
+			var shortcode = '['+ params.slug;
+			var close_tag = '[/' + params.slug + ']';
+			var mce_selection = ( tinymce.activeEditor ) ? tinymce.activeEditor.selection.getContent() : false;
 
 			$.each( shortcode_params, function( key, value ) {
 				shortcode += ' '+ key +'="'+ value +'"';
@@ -124,7 +124,6 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 					startPos = canvas.selectionStart,
 					endPos = canvas.selectionEnd;
 
-				window.console.log( startPos,endPos );
 				// No need to do all this fancy substring stuff unless we have a selection
 				if ( startPos !== endPos ) {
 					shortcode = text.substring( 0, startPos ) + shortcode + text + close_tag + text.substring( endPos, text.length );
