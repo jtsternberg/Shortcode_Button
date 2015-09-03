@@ -32,6 +32,7 @@ $js_button_data = array(
 	'authorurl'      => 'http://dsgnwrks.pro',
 	'infourl'        => 'https://github.com/jtsternberg/Shortcode_Button',
 	'version'        => '1.0.0',
+	'include_close'  => true // Will wrap your selection in the shortcode
 
 	// Use your own textdomain
 	'l10ncancel'     => __( 'Cancel', 'shortcode-button' ),
