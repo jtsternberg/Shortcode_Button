@@ -38,6 +38,7 @@ class _Shortcode_Button_ {
 			'version'        => '',
 			'l10ncancel'     => __( 'Cancel' ),
 			'l10ninsert'     => __( 'Insert Shortcode' ),
+			'include_close'  => false,
 			'slug'           => '',
 			'modalClass'     => 'wp-dialog',
 			'modalHeight'    => 'auto',
