@@ -103,8 +103,8 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 		btn.buildShortCode = function( shortcode_params ) {
 
 			var shortcode = '['+ params.slug;
-			var close_tag = ( params.include_close ) ? '[/' + params.slug + ']' : '';
-			var mce_selection = ( tinymce.activeEditor ) ? tinymce.activeEditor.selection.getContent() : false;
+			var close_tag = '[/' + params.slug + ']';
+			var selected_text = ( tinymce.activeEditor ) ? tinymce.activeEditor.selection.getContent() : false;
 
 			$.each( shortcode_params, function( key, value ) {
 				shortcode += ' '+ key +'="'+ value +'"';
@@ -115,9 +115,7 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 			/**
 			 * Shortcode closings for both quicktags and visual editor.
 			 */
-			if ( mce_selection ) {
-				shortcode += mce_selection + close_tag;
-			} else if ( ! btn.isVisual ) {
+			if ( ! btn.isVisual && ! selected_text ) {
 				var canvas = document.getElementById( 'content' );
 				var text = canvas.value;
 				var startPos = canvas.selectionStart;
@@ -125,9 +123,13 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 
 				// No need to do all this fancy substring stuff unless we have a selection
 				if ( startPos !== endPos ) {
-					shortcode = shortcode + text.substring( startPos, endPos ) + close_tag;
+					selected_text = text.substring( startPos, endPos );
 				}
+			}
 
+			// Force closing if we are indeed supposed to
+			if ( params.include_close ) {
+				shortcode = shortcode + selected_text + close_tag;
 			}
 
 			return shortcode;
