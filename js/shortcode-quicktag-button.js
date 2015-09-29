@@ -1,6 +1,6 @@
 window.wp_sc_buttons = window.wp_sc_buttons || {};
 
-window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbuttons, undefined){
+window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbuttons, undefined ) {
 	'use strict';
 
 	if ( ! buttons ) {
@@ -100,11 +100,32 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 
 		};
 
+		btn.getSelectedText = function() {
+			if ( btn.isVisual && window.tinymce.activeEditor ) {
+				return window.tinymce.activeEditor.selection.getContent();
+			}
+
+			btn.canvas.focus();
+
+			if ( document.selection ) { // IE
+				return document.selection.createRange().text;
+			}
+
+			var startPos = btn.canvas.selectionStart;
+			var endPos = btn.canvas.selectionEnd;
+
+			// No need to do all this fancy substring stuff unless we have a selection
+			if ( startPos !== endPos ) {
+				return btn.canvas.value.substring( startPos, endPos );
+			}
+
+			return '';
+		};
+
 		btn.buildShortCode = function( shortcode_params ) {
 
 			var shortcode = '['+ params.slug;
-			var close_tag = '[/' + params.slug + ']';
-			var selected_text = ( tinymce.activeEditor ) ? tinymce.activeEditor.selection.getContent() : false;
+			var selected_text = btn.getSelectedText();
 
 			$.each( shortcode_params, function( key, value ) {
 				shortcode += ' '+ key +'="'+ value +'"';
@@ -112,24 +133,9 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 
 			shortcode += ']';
 
-			/**
-			 * Shortcode closings for both quicktags and visual editor.
-			 */
-			if ( ! btn.isVisual && ! selected_text ) {
-				var canvas = document.getElementById( 'content' );
-				var text = canvas.value;
-				var startPos = canvas.selectionStart;
-				var endPos = canvas.selectionEnd;
-
-				// No need to do all this fancy substring stuff unless we have a selection
-				if ( startPos !== endPos ) {
-					selected_text = text.substring( startPos, endPos );
-				}
-			}
-
 			// Force closing if we are indeed supposed to
 			if ( params.include_close ) {
-				shortcode = shortcode + selected_text + close_tag;
+				shortcode = shortcode + selected_text + '[/' + params.slug + ']';
 			}
 
 			return shortcode;
@@ -174,10 +180,11 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 			btn.$.modal.dialog( args );
 		};
 
-		btn.open = function( isVisual ) {
+		btn.open = function( isVisual, canvas ) {
 			btn.cache();
 
 			btn.isVisual = true === isVisual;
+			btn.canvas = canvas || '';
 
 			btn.$.modal.dialog( 'open' );
 		};
@@ -201,4 +208,4 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 
 	return qt;
 
-})(window, document, jQuery, QTags, shortcodeButtonsl10n, wp_sc_buttons);
+} )( window, document, jQuery, QTags, shortcodeButtonsl10n, wp_sc_buttons );
