@@ -33,7 +33,6 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 	};
 
 	var Button = function( params ) {
-
 		var btn = {
 			params   : params,
 			isVisual : false,
@@ -104,12 +103,34 @@ window.wp_sc_buttons.qt = (function(window, document, $, QTags, buttons, scbutto
 		btn.buildShortCode = function( shortcode_params ) {
 
 			var shortcode = '['+ params.slug;
+			var close_tag = '[/' + params.slug + ']';
+			var selected_text = ( tinymce.activeEditor ) ? tinymce.activeEditor.selection.getContent() : false;
 
 			$.each( shortcode_params, function( key, value ) {
 				shortcode += ' '+ key +'="'+ value +'"';
 			});
 
 			shortcode += ']';
+
+			/**
+			 * Shortcode closings for both quicktags and visual editor.
+			 */
+			if ( ! btn.isVisual && ! selected_text ) {
+				var canvas = document.getElementById( 'content' );
+				var text = canvas.value;
+				var startPos = canvas.selectionStart;
+				var endPos = canvas.selectionEnd;
+
+				// No need to do all this fancy substring stuff unless we have a selection
+				if ( startPos !== endPos ) {
+					selected_text = text.substring( startPos, endPos );
+				}
+			}
+
+			// Force closing if we are indeed supposed to
+			if ( params.include_close ) {
+				shortcode = shortcode + selected_text + close_tag;
+			}
 
 			return shortcode;
 		};
