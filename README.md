@@ -125,6 +125,12 @@ function shortcode_button_only_pages() {
 
 #### Changelog
 
+* 0.1.2
+	* Add 'include_close' parameter for self-closing shortcodes. This also allows wrapping a selection with the shortcode.
+	* Added a way that the `"{$button_slug}_shortcode_fields"` filter can pass content to be added inside the shortcode.
+	* Add `shortcode_button_js_url` filter in case the JS assets are not enqueued properly.
+	* Add the modal to the footer at an earlier priority so that scripts can be enqueued properly.
+
 * 0.1.1
 	* Add override options for dialog modal's class, height, and width.
 	* Better styling for CMB2 fields.
