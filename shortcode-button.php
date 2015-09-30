@@ -81,8 +81,8 @@ class _Shortcode_Button_ {
 
 		add_action( 'admin_init', array( $this, 'button_init' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'register_quicktag_button_script' ) );
-		add_action( 'admin_footer', array( $this, 'add_quicktag_button_script' ), 9 );
-		add_action( 'admin_footer', array( $this, 'add_modal_form' ), 9 );
+		add_action( 'admin_footer', array( $this, 'add_quicktag_button_script' ), 7 );
+		add_action( 'admin_footer', array( $this, 'add_modal_form' ), 7 );
 	}
 
 	/**
