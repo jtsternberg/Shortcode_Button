@@ -130,6 +130,8 @@ function shortcode_button_only_pages() {
 	* Added a way that the `"{$button_slug}_shortcode_fields"` filter can pass content to be added inside the shortcode.
 	* Add `shortcode_button_js_url` filter in case the JS assets are not enqueued properly.
 	* Add the modal to the footer at an earlier priority so that scripts can be enqueued properly.
+	* Added ability to register a shortcode button that does NOT open a modal (no fields, or added programatically)
+	* Added javascript events, `shortcode_button:click` and `shortcode_button:insert`.
 
 * 0.1.1
 	* Add override options for dialog modal's class, height, and width.

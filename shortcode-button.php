@@ -275,13 +275,14 @@ class _Shortcode_Button_ {
 	 */
 	public function process_form() {
 		$cmb_config = $this->get_cmb_config();
+		$fields = isset( $_REQUEST['fields'] ) ? (array) $_REQUEST['fields'] : array();
 
 		// no cmb? just filter and send it back
 		if ( empty( $cmb_config ) ) {
-			wp_send_json_success( $this->filter_form_fields( $_REQUEST ) );
+			wp_send_json_success( $this->filter_form_fields( $fields ) );
 		}
 
-		$this->process_cmb_form();
+		$this->process_cmb_form( $fields );
 	}
 
 	/**
@@ -289,16 +290,17 @@ class _Shortcode_Button_ {
 	 * (Only applies if cmb_metabox_config parameter exists)
 	 *
 	 * @since  0.1.0
+	 * @param  array $fields Field values to process
 	 */
-	public function process_cmb_form() {
+	public function process_cmb_form( $fields ) {
 		$cmb = $this->get_cmb_object();
 
 		if (
-			isset( $_REQUEST['object_id'], $_REQUEST[ $cmb->nonce() ] )
-			&& wp_verify_nonce( $_REQUEST[ $cmb->nonce() ], $cmb->nonce() )
-			&& $_REQUEST['object_id'] == $this->button_slug
+			isset( $fields['object_id'], $fields[ $cmb->nonce() ] )
+			&& wp_verify_nonce( $fields[ $cmb->nonce() ], $cmb->nonce() )
+			&& $fields['object_id'] == $this->button_slug
 		) {
-			wp_send_json_success( $this->sanitize_cmb_fields() );
+			wp_send_json_success( $this->sanitize_cmb_fields( $fields ) );
 		}
 
 		wp_send_json_error( __( 'failed verification' ) );
@@ -310,12 +312,13 @@ class _Shortcode_Button_ {
 	 *
 	 * @since  0.1.0
 	 *
-	 * @return array Array of sanitized fields
+	 * @param  array $fields Field values to sanitize
+	 * @return array         Array of sanitized fields
 	 */
-	public function sanitize_cmb_fields() {
+	public function sanitize_cmb_fields( $fields ) {
 		$cmb = $this->get_cmb_object();
 
-		$cmb->data_to_save = $_REQUEST;
+		$cmb->data_to_save = $fields;
 		$object_id = $cmb->object_id( $this->button_slug );
 		$cmb->object_type( 'options-page' );
 

@@ -46,7 +46,7 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 			}
 
 			btn.$.modal = $( document.getElementById( params.slug +'-form' ) );
-			btn.$.form = btn.$.modal.find( 'form' );
+			btn.$.form = btn.$.modal.length ? btn.$.modal.find( 'form' ) : false;
 			cached = true;
 		};
 
@@ -67,29 +67,34 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 		};
 
 		btn.close = function() {
-			btn.$.form.trigger( 'reset' );
+			if ( btn.$.form ) {
+				btn.$.form.trigger( 'reset' );
+			}
 		};
 
 		btn.cancel = function() {
-			btn.$.modal.dialog( 'close' );
+			if ( btn.$.modal.length ) {
+				btn.$.modal.dialog( 'close' );
+			}
 		};
 
 		btn.insert = function() {
 
-			var formData = btn.$.form.serializeObject();
-
-			formData.action = 'wp_sc_form_process_'+ params.slug;
+			var ajaxData = {
+				fields : btn.$.form.length ? btn.$.form.serializeObject() : {},
+				action : 'wp_sc_form_process_'+ params.slug,
+			};
 
 			var formFail = function( response ) {
 				scbuttons.log( 'response failure', response );
 				scbuttons.log( 'ajaxurl', ajaxurl );
-				scbuttons.log( 'formData', formData );
+				scbuttons.log( 'fields', ajaxData.fields );
 				scbuttons.log( 'buttonParams', params );
 
-				btn.$.modal.dialog( 'close' );
+				btn.cancel();
 			};
 
-			$.post( ajaxurl, formData, function( response ) {
+			$.post( ajaxurl, ajaxData, function( response ) {
 				if ( response.success ) {
 					btn.insertCallback( response.data );
 				} else {
@@ -159,7 +164,10 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 				QTags.insertContent( shortcodeToInsert );
 			}
 
-			btn.$.modal.dialog( 'close' );
+			// handy event for listening when a shortcode is inserted
+			$( document.body ).trigger( 'shortcode_button:insert', { btn : btn, inserted: shortcodeToInsert } );
+
+			btn.cancel();
 		};
 
 		btn.init = function() {
@@ -168,6 +176,10 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 			var buttons = {};
 			buttons[ params.l10ncancel ] = btn.cancel;
 			buttons[ params.l10ninsert ] = btn.insert;
+
+			if ( ! btn.$.modal.length ) {
+				return;
+			}
 
 			var args = {
 				'dialogClass'   : params.modalClass,
@@ -191,7 +203,14 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 			btn.isVisual = true === isVisual;
 			btn.canvas = canvas || '';
 
-			btn.$.modal.dialog( 'open' );
+			// handy event for listening when a shortcode button is clicked
+			$( document.body ).trigger( 'shortcode_button:click', { btn : btn } );
+
+			if ( btn.$.modal.length ) {
+				return btn.$.modal.dialog( 'open' );
+			}
+
+			btn.insert();
 		};
 
 		return btn;
