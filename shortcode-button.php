@@ -142,12 +142,13 @@ class _Shortcode_Button_ {
 		$cmb_config  = $this->get_cmb_config();
 		$is_callable = is_callable( $callback );
 		$is_cmb      = ! empty( $cmb_config );
+		$output_form = $is_callable || $is_cmb;
 
-		if ( ! $is_callable && ! $is_cmb ) {
+		do_action( "shortcode_button_before_modal_{$this->button_slug}", $this, $output_form );
+
+		if ( ! $output_form ) {
 			return;
 		}
-
-		do_action( "shortcode_button_before_modal_{$this->button_slug}", $this );
 
 		?>
 		<div class="wp-sc-buttons-form" style="display: none; padding: 0 10px 20px;" id="<?php echo esc_attr( $this->button_slug ); ?>-form" title="<?php echo esc_attr( $this->button_data['button_tooltip'] ); ?>">
