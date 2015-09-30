@@ -3,7 +3,7 @@ if ( ! class_exists( '_Shortcode_Button_' ) ) :
 /**
  * Tinymce and Quicktag buttons for outputting shortcodes
  *
- * @version 0.1.1
+ * @version 0.1.2
  */
 class _Shortcode_Button_ {
 
@@ -146,6 +146,8 @@ class _Shortcode_Button_ {
 		if ( ! $is_callable && ! $is_cmb ) {
 			return;
 		}
+
+		do_action( "shortcode_button_before_modal_{$this->button_slug}", $this );
 
 		?>
 		<div class="wp-sc-buttons-form" style="display: none; padding: 0 10px 20px;" id="<?php echo esc_attr( $this->button_slug ); ?>-form" title="<?php echo esc_attr( $this->button_data['button_tooltip'] ); ?>">
