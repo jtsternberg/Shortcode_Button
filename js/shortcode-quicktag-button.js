@@ -126,16 +126,21 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 
 			var shortcode = '['+ params.slug;
 			var selected_text = btn.getSelectedText();
+			var content = '';
 
 			$.each( shortcode_params, function( key, value ) {
-				shortcode += ' '+ key +'="'+ value +'"';
+				if ( 'sc_content' === key ) {
+					content = value;
+				} else {
+					shortcode += ' '+ key +'="'+ value +'"';
+				}
 			});
 
 			shortcode += ']';
 
 			// Force closing if we are indeed supposed to
-			if ( params.include_close ) {
-				shortcode = shortcode + selected_text + '[/' + params.slug + ']';
+			if ( params.include_close || content ) {
+				shortcode = shortcode + selected_text + content + '[/' + params.slug + ']';
 			}
 
 			return shortcode;
