@@ -7,6 +7,14 @@ if ( ! class_exists( '_Shortcode_Button_' ) ) :
  */
 class _Shortcode_Button_ {
 
+	/**
+	 * Current version
+	 *
+	 * @var  string
+	 * @since  0.1.2
+	 */
+	const VERSION = '0.1.2';
+
 	protected $button_data = array();
 	protected $args        = array();
 	protected $handle      = '_shortcode_buttons_';
@@ -105,7 +113,12 @@ class _Shortcode_Button_ {
 	 * @since  0.1.0
 	 */
 	public function register_quicktag_button_script() {
-		wp_register_script( $this->handle, $this->url( 'shortcode-quicktag-button.js' ), array( 'quicktags', 'wpdialogs' ), '0.1.0', true );
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+		// core's jquery-serialize-object is old, so use our own.
+		wp_register_script( 'sb-jquery-serialize-object', $this->url( 'vendor/jquery.serialize-object.min.js' ), array( 'jquery' ), '2.5.0', true );
+
+		wp_register_script( $this->handle, $this->url( "shortcode-quicktag-button{$suffix}.js" ), array( 'quicktags', 'wpdialogs', 'sb-jquery-serialize-object' ), self::VERSION, true );
 	}
 
 	/**

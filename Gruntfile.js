@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json'),
 
 		jshint: {
-    		files: ['Gruntfile.js', 'js/**/*.js', '!js/**/*.min.js'],
+    		files: ['Gruntfile.js', 'js/**/*.js', '!js/**/*.min.js', '!js/vendor/**/*.js'],
 			options: {
 				curly   : true,
 				eqeqeq  : true,
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
 
 		watch: {
 			js: {
-				files: ['Gruntfile.js', 'js/**/*.js', '!js/**/*.min.js'],
+				files: ['Gruntfile.js', 'js/**/*.js', '!js/**/*.min.js', '!js/vendor/**/*.js'],
 				tasks: ['default'],
 			}
 		}

@@ -132,6 +132,7 @@ function shortcode_button_only_pages() {
 	* Add the modal to the footer at an earlier priority so that scripts can be enqueued properly.
 	* Added ability to register a shortcode button that does NOT open a modal (no fields, or added programatically)
 	* Added javascript events, `shortcode_button:click` and `shortcode_button:insert`.
+	* Better handling for nested field keys (i.e. <input name="name[value]" />).
 
 * 0.1.1
 	* Add override options for dialog modal's class, height, and width.

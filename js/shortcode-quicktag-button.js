@@ -15,23 +15,6 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 		}
 	};
 
-	$.fn.serializeObject = function() {
-		var o = {};
-		var a = this.serializeArray();
-
-		$.each( a, function() {
-			if ( o[this.name] !== undefined ) {
-				if ( !o[this.name].push ) {
-					o[this.name] = [o[this.name]];
-				}
-				o[this.name].push(this.value || '');
-			} else {
-				o[this.name] = this.value || '';
-			}
-		});
-		return o;
-	};
-
 	var Button = function( params ) {
 		var btn = {
 			params   : params,
@@ -79,9 +62,8 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 		};
 
 		btn.insert = function() {
-
 			var ajaxData = {
-				fields : btn.$.form.length ? btn.$.form.serializeObject() : {},
+				fields : btn.$.form ? btn.$.form._serializeObject() : {},
 				action : 'wp_sc_form_process_'+ params.slug,
 			};
 
