@@ -185,7 +185,7 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 			btn.$.modal.dialog( args );
 		};
 
-		btn.open = function( isVisual, canvas ) {
+		btn.click = function( isVisual, canvas ) {
 			btn.cache();
 
 			btn.isVisual = true === isVisual;
@@ -206,7 +206,7 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 		button.init();
 
 		// text editor quicktags button
-		QTags.addButton( button.params.slug, button.params.qt_button_text, button.open );
+		QTags.addButton( button.params.slug, button.params.qt_button_text, button.click );
 
 		qt[ button.params.slug ] = button;
 	}

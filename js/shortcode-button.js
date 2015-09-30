@@ -59,7 +59,7 @@ window.wp_sc_buttons.visualmode = window.wp_sc_buttons.visualmode || {};
 				editor.addCommand( button.slug, function() {
 					editor.focus();
 					scbuttons.visualmode[ button.slug ] = editor;
-					scbuttons.qt[ button.slug ].open( true );
+					scbuttons.qt[ button.slug ].click( true );
 				});
 			},
 
