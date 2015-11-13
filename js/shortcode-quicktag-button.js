@@ -28,12 +28,14 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 				return;
 			}
 
+			btn.$.body = $( document.body );
 			btn.$.modal = $( document.getElementById( params.slug +'-form' ) );
 			btn.$.form = btn.$.modal.length ? btn.$.modal.find( 'form' ) : false;
 			cached = true;
 		};
 
 		btn.create = function() {
+
 			var $this = $(this);
 			var $form = $this.parent();
 			var $submitBtn = $form.find('.ui-dialog-buttonpane button:last-child');
@@ -63,7 +65,7 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 
 		btn.insert = function() {
 			var ajaxData = {
-				fields : btn.$.form ? btn.$.form._serializeObject() : {},
+				fields : btn.$.form ? btn.$.form.serialize() : {},
 				action : 'wp_sc_form_process_'+ params.slug,
 			};
 
@@ -147,7 +149,7 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 			}
 
 			// handy event for listening when a shortcode is inserted
-			$( document.body ).trigger( 'shortcode_button:insert', { btn : btn, inserted: shortcodeToInsert } );
+			btn.$.body.trigger( 'shortcode_button:insert', { btn : btn, inserted: shortcodeToInsert } );
 
 			btn.cancel();
 		};
@@ -186,7 +188,7 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 			btn.canvas = canvas || '';
 
 			// handy event for listening when a shortcode button is clicked
-			$( document.body ).trigger( 'shortcode_button:click', { btn : btn } );
+			btn.$.body.trigger( 'shortcode_button:click', { btn : btn } );
 
 			if ( btn.$.modal.length ) {
 				return btn.$.modal.dialog( 'open' );
@@ -197,7 +199,6 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 
 		return btn;
 	};
-
 
 	var qt = {};
 

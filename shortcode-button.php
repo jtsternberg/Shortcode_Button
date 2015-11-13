@@ -114,11 +114,7 @@ class _Shortcode_Button_ {
 	 */
 	public function register_quicktag_button_script() {
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-
-		// core's jquery-serialize-object is old, so use our own.
-		wp_register_script( 'sb-jquery-serialize-object', $this->url( 'vendor/jquery.serialize-object.min.js' ), array( 'jquery' ), '2.5.0', true );
-
-		wp_register_script( $this->handle, $this->url( "shortcode-quicktag-button{$suffix}.js" ), array( 'quicktags', 'wpdialogs', 'sb-jquery-serialize-object' ), self::VERSION, true );
+		wp_register_script( $this->handle, $this->url( "shortcode-quicktag-button{$suffix}.js" ), array( 'quicktags', 'wpdialogs' ), self::VERSION, true );
 	}
 
 	/**
@@ -288,7 +284,13 @@ class _Shortcode_Button_ {
 	 */
 	public function process_form() {
 		$cmb_config = $this->get_cmb_config();
-		$fields = isset( $_REQUEST['fields'] ) ? (array) $_REQUEST['fields'] : array();
+
+		$fields = array();
+
+		if ( isset( $_REQUEST['fields'] ) ) {
+			// Parse the URL query string of the fields array.
+			parse_str( $_POST['fields'], $fields );
+		}
 
 		// no cmb? just filter and send it back
 		if ( empty( $cmb_config ) ) {
