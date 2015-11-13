@@ -213,6 +213,11 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 		qt[ button.params.slug ] = button;
 	}
 
+	// Close modals when clicking overlay.
+	$( document.body ).on( 'click', '.ui-widget-overlay', function() {
+		$.each( qt, function( slug, btn ) { btn.cancel(); });
+	} );
+
 	return qt;
 
 } )( window, document, jQuery, QTags, shortcodeButtonsl10n, wp_sc_buttons );
