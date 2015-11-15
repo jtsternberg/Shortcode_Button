@@ -1,11 +1,11 @@
 <?php
-if ( ! class_exists( '_Shortcode_Button_' ) ) :
+if ( ! class_exists( 'Shortcode_Button' ) ) :
 /**
  * Tinymce and Quicktag buttons for outputting shortcodes
  *
- * @version 0.1.2
+ * @version 0.2.0
  */
-class _Shortcode_Button_ {
+class Shortcode_Button {
 
 	/**
 	 * Current version
@@ -17,9 +17,10 @@ class _Shortcode_Button_ {
 
 	protected $button_data = array();
 	protected $args        = array();
-	protected $handle      = '_shortcode_buttons_';
+	protected static $handle      = 'shortcode_button';
 	protected static $enqueued     = false;
 	protected static $buttons_data = array();
+	protected static $scripts_url = '';
 
 	/**
 	 * Button name
@@ -56,7 +57,6 @@ class _Shortcode_Button_ {
 		$this->args = wp_parse_args( $args, array(
 			'cmb_metabox_config'    => array(),
 			'form_display_callback' => '',
-			'scripts_url'           => apply_filters( 'shortcode_button_js_url', set_url_scheme( str_ireplace( ABSPATH, site_url( '/' ), trailingslashit( dirname( __FILE__ ) ) . 'js' ) ) ),
 			'conditional_callback'  => false,
 		) );
 
@@ -71,6 +71,8 @@ class _Shortcode_Button_ {
 	 * @since  0.1.0
 	 */
 	public function hooks() {
+		static $once = false;
+
 		add_action( 'wp_ajax_wp_sc_form_process_'. $this->button_slug, array( $this, 'process_form' ) );
 
 		// If we have a conditional callback and the return of the callback is false
@@ -80,9 +82,16 @@ class _Shortcode_Button_ {
 		}
 
 		add_action( 'admin_init', array( $this, 'button_init' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_quicktag_button_script' ) );
-		add_action( 'admin_footer', array( $this, 'add_quicktag_button_script' ), 7 );
-		add_action( 'admin_footer', array( $this, 'add_modal_form' ), 7 );
+		add_action( 'scb_modal', array( $this, 'add_modal_form' ) );
+
+		if ( ! $once ) {
+
+			add_action( 'admin_footer', array( __CLASS__, 'add_quicktag_button_script' ), 7 );
+
+			self::$scripts_url = apply_filters( 'shortcode_button_assets_url', set_url_scheme( str_ireplace( ABSPATH, site_url( '/' ), trailingslashit( dirname( __FILE__ ) ) ) ) );
+
+			$once = true;
+		}
 	}
 
 	/**
@@ -103,18 +112,8 @@ class _Shortcode_Button_ {
 
 	// and tell tinymce where it lives
 	public function add_button( $plugin_array ) {
-		$plugin_array[ $this->button_slug ] = $this->url( 'shortcode-button.js' );
+		$plugin_array[ $this->button_slug ] = self::url( 'js/shortcode-button.js' );
 		return $plugin_array;
-	}
-
-	/**
-	 * Register our quicktag/general purpose button script
-	 *
-	 * @since  0.1.0
-	 */
-	public function register_quicktag_button_script() {
-		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		wp_register_script( $this->handle, $this->url( "shortcode-quicktag-button{$suffix}.js" ), array( 'quicktags', 'wpdialogs' ), self::VERSION, true );
 	}
 
 	/**
@@ -122,17 +121,23 @@ class _Shortcode_Button_ {
 	 *
 	 * @since 0.1.0
 	 */
-	public function add_quicktag_button_script() {
+	public static function add_quicktag_button_script() {
 		$current_screen = get_current_screen();
 		if ( empty( self::$buttons_data ) || ! isset( $current_screen->parent_base ) || $current_screen->parent_base != 'edit' ) {
 			return;
 		}
 
-		wp_enqueue_script( $this->handle );
-		wp_enqueue_style( 'wp-jquery-ui-dialog' );
-		wp_localize_script( $this->handle, 'shortcodeButtonsl10n', array_reverse( self::$buttons_data ) );
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_script( self::$handle, self::url( "js/shortcode-quicktag-button{$suffix}.js" ), array( 'quicktags' ), self::VERSION, true );
+
+		wp_enqueue_style( self::$handle, self::url( "css/shortcode-button{$suffix}.css" ), array( 'wp-jquery-ui-dialog' ), self::VERSION );
+
+		wp_localize_script( self::$handle, 'shortcodeButtonsl10n', array_reverse( self::$buttons_data ) );
 
 		self::$buttons_data = array();
+
+		include_once trailingslashit( dirname( __FILE__ ) ) . 'templates/modal.php';
 	}
 
 	/**
@@ -146,7 +151,7 @@ class _Shortcode_Button_ {
 			return;
 		}
 
-		// Determine if we should use CMB or generic form callback
+		// Determine if we should use CMB or generic form callback.
 		$callback    = $this->form_callback();
 		$cmb_config  = $this->get_cmb_config();
 		$is_callable = is_callable( $callback );
@@ -160,7 +165,7 @@ class _Shortcode_Button_ {
 		}
 
 		?>
-		<div class="wp-sc-buttons-form" style="display: none; padding: 0 10px 20px;" id="<?php echo esc_attr( $this->button_slug ); ?>-form" title="<?php echo esc_attr( $this->button_data['button_tooltip'] ); ?>">
+		<div class="scb-form-wrap" style="padding: 0 10px 20px;" id="<?php echo esc_attr( $this->button_slug ); ?>-form" title="<?php echo esc_attr( $this->button_data['button_tooltip'] ); ?>">
 			<?php if ( $is_cmb ) {
 				$this->do_cmb_form();
 			} else {
@@ -203,7 +208,7 @@ class _Shortcode_Button_ {
 		$this->cmbmc = false;
 
 		if ( ! empty( $this->args['cmb_metabox_config'] ) ) {
-			// config can be passed as an array or a callback (which returns the array)
+			// Config can be passed as an array or a callback (which returns the array).
 			$this->cmbmc = is_callable( $this->args['cmb_metabox_config'] ) ? call_user_func( $this->args['cmb_metabox_config'], $this->button_data, $this->args ) : (array) $this->args['cmb_metabox_config'];
 
 		}
@@ -225,34 +230,6 @@ class _Shortcode_Button_ {
 
 		$form = '<form class="cmb-form" method="post" id="%1$s" enctype="multipart/form-data" encoding="multipart/form-data"><input type="hidden" name="object_id" value="%2$s">%3$s</form>';
 		cmb2_metabox_form( $this->get_cmb_object(), $this->button_slug, array( 'form_format' => $form ) );
-		?>
-		<style type="text/css" media="screen">
-		.cmb-form {
-			padding-left: 6px;
-			padding-right: 6px;
-		}
-		.ui-dialog .cmb-th {
-			width: 100%;
-		}
-		.ui-dialog .cmb-th,
-		.ui-dialog .cmb2-metabox > .cmb-row:first-of-type > .cmb-th,
-		.ui-dialog .cmb2-metabox .cmb-field-list > .cmb-row:first-of-type > .cmb-th {
-			padding: 1em 0 0 1px;
-		}
-		.ui-dialog .cmb-td {
-			padding: .2em 0 0;
-		}
-		.ui-dialog .cmb-type-checkbox .cmb-td {
-			padding: 1.2em 0 0 0;
-		}
-		.ui-dialog .cmb-type-checkbox .cmb-th {
-			width: 300px;
-		}
-		.ui-dialog .cmb-th + .cmb-td {
-			float: none;
-		}
-		</style>
-		<?php
 	}
 
 	/**
@@ -389,8 +366,8 @@ class _Shortcode_Button_ {
 	 *
 	 * @return string        Script url plus path if passed in
 	 */
-	public function url( $path = '' ) {
-		return trailingslashit( $this->args['scripts_url'] ) . $path;
+	public static function url( $path = '' ) {
+		return trailingslashit( self::$scripts_url ) . $path;
 	}
 
 	/**

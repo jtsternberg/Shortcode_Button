@@ -58,7 +58,7 @@ $additional_args = array(
 	// 'scripts_url' => '',
 );
 
-$button = new _Shortcode_Button_( $button_slug, $js_button_data, $additional_args );
+$button = new Shortcode_Button( $button_slug, $js_button_data, $additional_args );
 
 
 /**
@@ -125,14 +125,21 @@ function shortcode_button_only_pages() {
 
 #### Changelog
 
+* 0.2.0
+	* Removes jQuery-UI dialog dependency which caused some obscure bugs.
+	* Enable non-modal buttons for simply inserting shortcodes via the mce button.
+	* Rename to more-sane `Shortcode_Button` classname.
+	* Added javascript events, `'shortcode_button:clear'`, `'shortcode_button:open'` and `'shortcode_button:close'`.
+
 * 0.1.2
 	* Add 'include_close' parameter for self-closing shortcodes. This also allows wrapping a selection with the shortcode.
 	* Added a way that the `"{$button_slug}_shortcode_fields"` filter can pass content to be added inside the shortcode.
 	* Add `shortcode_button_js_url` filter in case the JS assets are not enqueued properly.
 	* Add the modal to the footer at an earlier priority so that scripts can be enqueued properly.
 	* Added ability to register a shortcode button that does NOT open a modal (no fields, or added programatically)
-	* Added javascript events, `shortcode_button:click` and `shortcode_button:insert`.
+	* Added javascript events, `'shortcode_button:click'` and `'shortcode_button:insert'`.
 	* Better handling for nested field keys (i.e. <input name="name[value]" />).
+	* New hook, `"shortcode_button_before_modal_{$button_slug}"`, added before the modal markup is output (for things like conditional enqueueing).
 
 * 0.1.1
 	* Add override options for dialog modal's class, height, and width.

@@ -1,0 +1,48 @@
+#scb-wrap {
+	display: none;
+}
+#scb-wrap.scbshow {
+	display: block;
+}
+.scbshow {
+	display: block;
+}
+.scb-form-wrap, .scb-wrap {
+	display: none;
+}
+.scbshow {
+	display: block;
+}
+#scb-modal {
+	position: absolute;
+	top: 15%;
+	left: 50%;
+}
+
+/**
+ * CMB2 styling
+ */
+.cmb-form {
+	padding-left: 6px;
+	padding-right: 6px;
+}
+.ui-dialog .cmb-th {
+	width: 100%;
+}
+.ui-dialog .cmb-th,
+.ui-dialog .cmb2-metabox > .cmb-row:first-of-type > .cmb-th,
+.ui-dialog .cmb2-metabox .cmb-field-list > .cmb-row:first-of-type > .cmb-th {
+	padding: 1em 0 0 1px;
+}
+.ui-dialog .cmb-td {
+	padding: .2em 0 0;
+}
+.ui-dialog .cmb-type-checkbox .cmb-td {
+	padding: 1.2em 0 0 0;
+}
+.ui-dialog .cmb-type-checkbox .cmb-th {
+	width: 300px;
+}
+.ui-dialog .cmb-th + .cmb-td {
+	float: none;
+}

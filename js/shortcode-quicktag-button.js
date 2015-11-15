@@ -1,15 +1,18 @@
 window.wp_sc_buttons = window.wp_sc_buttons || {};
 
-window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbuttons, undefined ) {
+( function( window, document, $, QTags, l10n, btns, undefined ) {
 	'use strict';
 
-	if ( ! buttons ) {
+	if ( ! l10n ) {
 		return;
 	}
 
-	scbuttons.log = function() {
-		scbuttons.log.history = scbuttons.log.history || [];
-		scbuttons.log.history.push( arguments );
+	var $c = {};
+	btns.qt = {};
+
+	btns.log = function() {
+		btns.log.history = btns.log.history || [];
+		btns.log.history.push( arguments );
 		if ( window.console ) {
 			window.console.log( Array.prototype.slice.call( arguments) );
 		}
@@ -28,39 +31,20 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 				return;
 			}
 
-			btn.$.body = $( document.body );
-			btn.$.modal = $( document.getElementById( params.slug +'-form' ) );
-			btn.$.form = btn.$.modal.length ? btn.$.modal.find( 'form' ) : false;
+			btn.$.wrap = $( document.getElementById( params.slug +'-form' ) );
+			btn.$.form = btn.$.wrap.length ? btn.$.wrap.find( 'form' ) : false;
 			cached = true;
-		};
-
-		btn.create = function() {
-
-			var $this = $(this);
-			var $form = $this.parent();
-			var $submitBtn = $form.find('.ui-dialog-buttonpane button:last-child');
-
-			// focus first button and bind enter to it
-			$submitBtn.focus().addClass( 'button-primary' );
-
-			$this.on( 'keypress', function(evt) {
-				if ( evt.keyCode === 13 ) {
-					evt.preventDefault();
-					$submitBtn.click();
-				}
-			});
 		};
 
 		btn.close = function() {
 			if ( btn.$.form ) {
 				btn.$.form.trigger( 'reset' );
+				btn.$.form.find( '[class^="cmb-row cmb-type-"]' ).trigger( 'shortcode_button:clear' );
 			}
-		};
 
-		btn.cancel = function() {
-			if ( btn.$.modal.length ) {
-				btn.$.modal.dialog( 'close' );
-			}
+			$( document ).off( 'keyup', btn.keyup );
+			$c.modal.off( 'click', '.scb-insert', btn.insert );
+			$c.wrap.removeClass( 'scbshow' );
 		};
 
 		btn.insert = function() {
@@ -70,12 +54,12 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 			};
 
 			var formFail = function( response ) {
-				scbuttons.log( 'response failure', response );
-				scbuttons.log( 'ajaxurl', ajaxurl );
-				scbuttons.log( 'fields', ajaxData.fields );
-				scbuttons.log( 'buttonParams', params );
+				btns.log( 'response failure', response );
+				btns.log( 'ajaxurl', ajaxurl );
+				btns.log( 'fields', ajaxData.fields );
+				btns.log( 'buttonParams', params );
 
-				btn.cancel();
+				btn.close();
 			};
 
 			$.post( ajaxurl, ajaxData, function( response ) {
@@ -142,82 +126,138 @@ window.wp_sc_buttons.qt = ( function( window, document, $, QTags, buttons, scbut
 				return;
 			}
 
-			if ( btn.isVisual && scbuttons.visualmode[ params.slug ] ) {
-				scbuttons.visualmode[ params.slug ].execCommand( 'mceInsertContent', 0, shortcodeToInsert );
+			if ( btn.isVisual && btns.visualmode[ params.slug ] ) {
+				btns.visualmode[ params.slug ].execCommand( 'mceInsertContent', 0, shortcodeToInsert );
 			} else {
 				QTags.insertContent( shortcodeToInsert );
 			}
 
 			// handy event for listening when a shortcode is inserted
-			btn.$.body.trigger( 'shortcode_button:insert', { btn : btn, inserted: shortcodeToInsert } );
+			$c.body.trigger( 'shortcode_button:insert', { btn : btn, inserted: shortcodeToInsert } );
 
-			btn.cancel();
+			btn.close();
 		};
 
-		btn.init = function() {
-			btn.cache();
-
-			var buttons = {};
-			buttons[ params.l10ncancel ] = btn.cancel;
-			buttons[ params.l10ninsert ] = btn.insert;
-
-			if ( ! btn.$.modal.length ) {
+		btn.initModal = function() {
+			if ( ! btn.$.wrap.length ) {
 				return;
 			}
 
-			var args = {
-				'dialogClass'   : params.modalClass,
-				'modal'         : true,
-				'autoOpen'      : false,
-				'draggable'     : false,
-				'height'        : params.modalHeight,
-				'width'         : params.modalWidth,
-				'closeOnEscape' : true,
-				'buttons'       : buttons,
-				'create'        : btn.create,
-				'close'         : btn.close
-			};
+			$c.modal.addClass( params.modalClass ).css({ height: params.modalHeight, width: params.modalWidth });
+			$c.modal.find( '.scb-title' ).text( params.button_tooltip );
+			$c.modal.find( '.scb-cancel' ).text( params.l10ncancel );
+			$c.modal.find( '.scb-insert' ).text( params.l10ninsert );
+		};
 
-			btn.$.modal.dialog( args );
+		btn.keyup = function( evt ) {
+			if ( 13 === evt.keyCode ) {
+				evt.preventDefault();
+				btn.insert();
+			}
+			if ( 27 === evt.keyCode ) {
+				btns.close();
+			}
+		};
+
+		btn.openModal = function() {
+			btns.open( btn.$.wrap );
+			$c.modal.find( '.scb-insert' ).trigger( 'focus' );
+			$c.modal.one( 'click', '.scb-insert', btn.insert );
+			$( document ).on( 'keyup', btn.keyup );
 		};
 
 		btn.click = function( isVisual, canvas ) {
 			btn.cache();
-
 			btn.isVisual = true === isVisual;
 			btn.canvas = canvas || '';
 
 			// handy event for listening when a shortcode button is clicked
-			btn.$.body.trigger( 'shortcode_button:click', { btn : btn } );
+			$c.body.trigger( 'shortcode_button:click', { btn : btn } );
 
-			if ( btn.$.modal.length ) {
-				return btn.$.modal.dialog( 'open' );
+			// If no form, just insert the shortcode.
+			if ( ! btn.$.wrap.length ) {
+				return btn.insert();
 			}
 
-			btn.insert();
+			btn.initModal();
+			btn.openModal();
 		};
 
 		return btn;
 	};
 
-	var qt = {};
+	( function() {
+		var button;
+		for ( var i = l10n.length - 1; i >= 0; i-- ) {
+			button = new Button( l10n[i] );
 
-	for (var i = buttons.length - 1; i >= 0; i--) {
-		var button = new Button( buttons[i] );
+			// text editor quicktags button
+			QTags.addButton( button.params.slug, button.params.qt_button_text, button.click );
 
-		button.init();
+			btns.qt[ button.params.slug ] = button;
+		}
+	} )();
 
-		// text editor quicktags button
-		QTags.addButton( button.params.slug, button.params.qt_button_text, button.click );
+	btns.open = function( el ) {
+		$c.body.trigger( 'shortcode_button:open', el );
+	};
 
-		qt[ button.params.slug ] = button;
-	}
+	btns.close = function() {
+		$c.body.trigger( 'shortcode_button:close' );
+	};
 
-	// Close modals when clicking overlay.
-	$( document.body ).on( 'click', '.ui-widget-overlay', function() {
-		$.each( qt, function( slug, btn ) { btn.cancel(); });
-	} );
+	btns.clearFields = function( evt ) {
+		var $this = $( evt.target );
+		var type = $this.attr( 'class' ).replace( 'cmb-row cmb-type-', '' ).split( ' ' )[0];
 
-	return qt;
+		// TODO: Reset all types
+		switch ( type ) {
+			case 'file':
+			case 'file-list':
+				return $this.find( '.cmb2-media-status' ).html( '' );
+			case 'colorpicker':
+				return $this.find( '.wp-picker-clear' ).click();
+		}
+	};
+
+	btns.init = function() {
+		$c.body = $( document.body );
+
+		$c.body
+			.on( 'click', '#scb-overlay, .scb-close, .scb-cancel', btns.close )
+			.on( 'shortcode_button:clear', btns.clearFields )
+			.on( 'shortcode_button:close', function() {
+				$.each( btns.qt, function( slug, btn ) { btn.close(); });
+				$c.wrap.removeClass( 'scbshow' );
+			} )
+			.on( 'shortcode_button:open', function( evt, el ) {
+				$c.wrap.addClass( 'scbshow' );
+
+				if ( el ) {
+					$c.forms.removeClass( 'scbshow' );
+					$( el ).addClass( 'scbshow' );
+				}
+
+				var width  = $c.modal.outerWidth();
+				var height = $c.modal.outerHeight();
+				var css    = {};
+
+				if ( window.innerWidth > width ) {
+					css.left = (window.innerWidth - width) / 2;
+				}
+
+				if ( window.innerHeight > height ) {
+					css.top = (window.innerHeight * 0.15) + window.scrollY;
+				}
+
+				$c.modal.css( css );
+			} );
+
+		$c.wrap  = $( document.getElementById( 'scb-wrap' ) );
+		$c.modal = $( document.getElementById( 'scb-modal' ) );
+		$c.forms = $( '.scb-form-wrap' );
+	};
+
+	$( btns.init );
 
 } )( window, document, jQuery, QTags, shortcodeButtonsl10n, wp_sc_buttons );
