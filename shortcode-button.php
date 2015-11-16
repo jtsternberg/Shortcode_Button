@@ -3,7 +3,7 @@ if ( ! class_exists( 'Shortcode_Button' ) ) :
 /**
  * Tinymce and Quicktag buttons for outputting shortcodes
  *
- * @version 0.2.0
+ * @version 0.2.1
  */
 class Shortcode_Button {
 
@@ -47,11 +47,13 @@ class Shortcode_Button {
 			'version'        => '',
 			'l10ncancel'     => __( 'Cancel' ),
 			'l10ninsert'     => __( 'Insert Shortcode' ),
+			'l10nupdate'     => __( 'Update Shortcode', 'snippet-cpt' ),
 			'include_close'  => false,
 			'slug'           => '',
 			'modalClass'     => 'wp-dialog',
 			'modalHeight'    => 'auto',
 			'modalWidth'     => 500,
+			'mceView'        => false,
 		) );
 
 		$this->args = wp_parse_args( $args, array(
@@ -86,9 +88,10 @@ class Shortcode_Button {
 
 		if ( ! $once ) {
 
-			add_action( 'admin_footer', array( __CLASS__, 'add_quicktag_button_script' ), 7 );
-
 			self::$scripts_url = apply_filters( 'shortcode_button_assets_url', set_url_scheme( str_ireplace( ABSPATH, site_url( '/' ), trailingslashit( dirname( __FILE__ ) ) ) ) );
+
+			add_action( 'admin_footer', array( __CLASS__, 'add_quicktag_button_script' ), 7 );
+			add_action( 'wp_ajax_scb_parse_shortcode', array( __CLASS__, 'ajax_parse_shortcode' ) );
 
 			$once = true;
 		}
@@ -129,8 +132,9 @@ class Shortcode_Button {
 
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( self::$handle, self::url( "js/shortcode-quicktag-button{$suffix}.js" ), array( 'quicktags' ), self::VERSION, true );
+		wp_enqueue_script( self::$handle, self::url( "js/shortcode-quicktag-button{$suffix}.js" ), array( 'jquery', 'quicktags' ), self::VERSION, true );
 
+		// wp-jquery-ui-dialog css still needed as we're borrowing some dialog markup.
 		wp_enqueue_style( self::$handle, self::url( "css/shortcode-button{$suffix}.css" ), array( 'wp-jquery-ui-dialog' ), self::VERSION );
 
 		wp_localize_script( self::$handle, 'shortcodeButtonsl10n', array_reverse( self::$buttons_data ) );
@@ -355,6 +359,55 @@ class Shortcode_Button {
 	function filter_form_fields( $fields, $unmodified_fields = array() ) {
 		// Pass updated form values through a filter and return
 		return (array) apply_filters( "{$this->button_slug}_shortcode_fields", $fields, $this, empty( $unmodified_fields ) ? $fields : $unmodified_fields );
+	}
+
+	/**
+	 * Parse shortcode for display within a TinyMCE view.
+	 */
+	public static function ajax_parse_shortcode() {
+		global $wp_scripts;
+
+		if ( empty( $_POST['shortcode'] ) ) {
+			wp_send_json_error();
+		}
+
+		$slug = sanitize_text_field( wp_unslash( $_POST['shortcode'] ) );
+		$shortcode = do_shortcode( $slug );
+
+		if ( empty( $shortcode ) ) {
+			wp_send_json_error( array(
+				'type' => 'no-items',
+				'message' => __( 'No items found.' ),
+			) );
+		}
+
+		$head  = '';
+		$styles = wpview_media_sandbox_styles();
+
+		foreach ( $styles as $style ) {
+			$head .= '<link type="text/css" rel="stylesheet" href="' . $style . '">';
+		}
+
+		if ( ! empty( $wp_scripts ) ) {
+			$wp_scripts->done = array();
+		}
+
+		ob_start();
+		echo $shortcode;
+
+		$send = array(
+			'head' => $head,
+			'body' => ob_get_clean(),
+		);
+
+		$send = apply_filters( "shortcode_button_parse_mce_view_before_send", $send );
+		$send = apply_filters( "shortcode_button_parse_mce_view_before_send_$slug", $send );
+
+		self::send_json_success( $send );
+	}
+
+	public static function send_json_success( $send ) {
+		wp_send_json_success( $send );
 	}
 
 	/**

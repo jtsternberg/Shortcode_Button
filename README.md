@@ -125,6 +125,10 @@ function shortcode_button_only_pages() {
 
 #### Changelog
 
+* 0.2.1
+	* Enables tinymce views, though the implementation needs manual effort per-shortcode. Can use the `"shortcode_button_parse_mce_view_before_send"` and `"shortcode_button_parse_mce_view_before_send_$slug"` to modify the shortcode display before it's returned to the view.
+	* Added javascript events, `'shortcode_button:jquery_init_complete'`, `'shortcode_button:buttons_init_complete'`, `'shortcode_button:populate'`, `'shortcode_button:button_init_complete_'+ buttonSlug`.
+
 * 0.2.0
 	* Removes jQuery-UI dialog dependency which caused some obscure bugs.
 	* Enable non-modal buttons for simply inserting shortcodes via the mce button.

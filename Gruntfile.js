@@ -22,7 +22,7 @@ module.exports = function(grunt) {
 					exports : true,
 					module  : false
 				},
-				predef  :['document','window','ajaxurl','jQuery','shortcodeButtonsl10n','tinymce', 'QTags', 'wp_sc_buttons']
+				predef  :['document','window','ajaxurl','jQuery','wp','shortcodeButtonsl10n','tinymce', 'QTags', 'wp_sc_buttons']
 			}
 		},
 

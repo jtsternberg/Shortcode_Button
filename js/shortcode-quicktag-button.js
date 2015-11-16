@@ -1,6 +1,6 @@
 window.wp_sc_buttons = window.wp_sc_buttons || {};
 
-( function( window, document, $, QTags, l10n, btns, undefined ) {
+( function( window, document, $, wp, QTags, l10n, btns, undefined ) {
 	'use strict';
 
 	if ( ! l10n ) {
@@ -22,6 +22,10 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		var btn = {
 			params   : params,
 			isVisual : false,
+			editMode : false,
+			postID   : 0,
+			content  : '',
+			mceView  : {},
 			$        : {}
 		};
 		var cached = false;
@@ -33,6 +37,7 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 			btn.$.wrap = $( document.getElementById( params.slug +'-form' ) );
 			btn.$.form = btn.$.wrap.length ? btn.$.wrap.find( 'form' ) : false;
+			btn.postID = $( '#post_ID' ).val() || 0;
 			cached = true;
 		};
 
@@ -74,8 +79,16 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		};
 
 		btn.getSelectedText = function() {
+			if ( btn.editMode ) {
+				return btn.content;
+			}
+
 			if ( btn.isVisual && window.tinymce.activeEditor ) {
 				return window.tinymce.activeEditor.selection.getContent();
+			}
+
+			if ( ! btn.canvas ) {
+				return '';
 			}
 
 			btn.canvas.focus();
@@ -120,20 +133,22 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		};
 
 		btn.insertCallback = function( shortcode_params ) {
-			var shortcodeToInsert = btn.buildShortCode( shortcode_params );
+			var shortcode = btn.buildShortCode( shortcode_params );
 
-			if ( ! shortcodeToInsert ) {
+			if ( ! shortcode ) {
 				return;
 			}
 
-			if ( btn.isVisual && btns.visualmode[ params.slug ] ) {
-				btns.visualmode[ params.slug ].execCommand( 'mceInsertContent', 0, shortcodeToInsert );
+			if ( btn.editMode ) {
+				btn.editMode( shortcode );
+			} else if ( btn.isVisual && btns.visualmode[ params.slug ] ) {
+				btns.visualmode[ params.slug ].execCommand( 'mceInsertContent', 0, shortcode );
 			} else {
-				QTags.insertContent( shortcodeToInsert );
+				QTags.insertContent( shortcode );
 			}
 
 			// handy event for listening when a shortcode is inserted
-			$c.body.trigger( 'shortcode_button:insert', { btn : btn, inserted: shortcodeToInsert } );
+			$c.body.trigger( 'shortcode_button:insert', { btn : btn, inserted: shortcode } );
 
 			btn.close();
 		};
@@ -146,7 +161,7 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			$c.modal.addClass( params.modalClass ).css({ height: params.modalHeight, width: params.modalWidth });
 			$c.modal.find( '.scb-title' ).text( params.button_tooltip );
 			$c.modal.find( '.scb-cancel' ).text( params.l10ncancel );
-			$c.modal.find( '.scb-insert' ).text( params.l10ninsert );
+			$c.modal.find( '.scb-insert' ).text( btn.editMode ? params.l10nupdate : params.l10ninsert );
 		};
 
 		btn.keyup = function( evt ) {
@@ -167,8 +182,15 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		};
 
 		btn.click = function( isVisual, canvas ) {
+			if ( 'function' === typeof( isVisual ) ) {
+				btn.editMode = isVisual;
+				isVisual = true;
+				btn.isVisual = true;
+			} else {
+				btn.isVisual = true === isVisual;
+			}
+
 			btn.cache();
-			btn.isVisual = true === isVisual;
 			btn.canvas = canvas || '';
 
 			// handy event for listening when a shortcode button is clicked
@@ -183,10 +205,79 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			btn.openModal();
 		};
 
+		if ( btn.params.mceView ) {
+			/**
+			 * TODO
+			 * - Make selected content (for self-closing shortcodes) be editable.
+			 *   Probably append an editor to the modal?
+			 * - Document process for properly displaying rendered shortcode.
+			 * - Populate modal fields with attribute values.
+			 */
+
+			btn.mceView = {
+				action: 'scb_parse_shortcode',
+				state: [],
+			};
+
+			btn.mceView.initialize = function() {
+				var that = this;
+
+				if ( that.url ) {
+					that.loader = false;
+					that.shortcode = wp.media.embed.shortcode( {
+						url: that.text
+					} );
+				}
+
+				// Cache content property.
+				btn.content = that.shortcode.content;
+
+				wp.ajax
+					.post( that.action, {
+						post_ID   : btn.postID,
+						type      : that.shortcode.tag,
+						shortcode : that.shortcode.string()
+					} )
+					.done( function( response ) {
+						that.render( response );
+					} )
+					.fail( btn.mceView.ajaxFail );
+
+			};
+
+			btn.mceView.ajaxFail = function( response ) {
+				btns.log( 'response fail', response );
+				if ( btn.mceView.url ) {
+					btn.mceView.removeMarkers();
+				} else {
+					btn.mceView.setError( response.message || response.statusText, 'admin-media' );
+				}
+			};
+
+			btn.mceView.edit = function( text, update ) {
+
+				if ( ! this.shortcode.attrs || ! this.shortcode.attrs.named ) {
+					return;
+				}
+
+				btn.cache();
+
+				var attrs = this.shortcode.attrs.named;
+
+				btns.log( 'attrs', attrs, this.shortcode.attrs );
+
+				$c.modal.find( '.scb-insert' ).text( params.l10nupdate );
+
+				btn.$.form.find( '[class^="cmb-row cmb-type-"]' ).trigger( 'shortcode_button:populate', { btn : btn, attrs: attrs } );
+
+				btn.click( update );
+			};
+		}
+
 		return btn;
 	};
 
-	( function() {
+	btns.init = function() {
 		var button;
 		for ( var i = l10n.length - 1; i >= 0; i-- ) {
 			button = new Button( l10n[i] );
@@ -195,8 +286,16 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			QTags.addButton( button.params.slug, button.params.qt_button_text, button.click );
 
 			btns.qt[ button.params.slug ] = button;
+
+			if ( button.params.mceView ) {
+				wp.mce.views.register( button.params.slug, button.mceView );
+			}
+
+			$c.body.trigger( 'shortcode_button:button_init_complete_'+ button.params.slug, { btn : button } );
 		}
-	} )();
+
+		$c.body.trigger( 'shortcode_button:buttons_init_complete' );
+	};
 
 	btns.open = function( el ) {
 		$c.body.trigger( 'shortcode_button:open', el );
@@ -220,12 +319,43 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		}
 	};
 
-	btns.init = function() {
+	btns._populateFields = function( evt, _data ) {
+		var $field = $( evt.target );
+		var classes = $field.attr( 'class' ).replace( 'cmb-row cmb-type-', '' ).split( ' ' );
+		var data = $.extend( true, {}, _data );
+		data.type = classes[0];
+		data.name = classes[1].replace( 'cmb2-id-', '' ).split( ' ' )[0];
+		data.value = data.attrs[ data.name ] ? data.attrs[ data.name ] : '';
+
+		if ( data.btn.populateField ) {
+			return data.btn.populateField( $field, data );
+		}
+
+		return btns._populateField( $field, data );
+	};
+
+	btns._populateField = function( $field, data ) {
+		// TODO: Set fields for all types
+		switch ( data.type ) {
+			case 'text':
+				return $field.find( '[name=' + data.name + ']' ).val( data.value );
+			case 'radio':
+			case 'radio_inline':
+			case 'multicheck':
+				$field.find( '[name=' + data.name + '][checked]' ).removeAttr( 'checked' );
+				return $field.find( '[name=' + data.name + '][value=' + data.value + ']' ).prop( 'checked', 1 );
+		}
+	};
+
+	btns.jQueryInit = function() {
 		$c.body = $( document.body );
+
+		btns.init();
 
 		$c.body
 			.on( 'click', '#scb-overlay, .scb-close, .scb-cancel', btns.close )
 			.on( 'shortcode_button:clear', btns.clearFields )
+			.on( 'shortcode_button:populate', btns._populateFields )
 			.on( 'shortcode_button:close', function() {
 				$.each( btns.qt, function( slug, btn ) { btn.close(); });
 				$c.wrap.removeClass( 'scbshow' );
@@ -256,8 +386,10 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		$c.wrap  = $( document.getElementById( 'scb-wrap' ) );
 		$c.modal = $( document.getElementById( 'scb-modal' ) );
 		$c.forms = $( '.scb-form-wrap' );
+
+		$c.body.trigger( 'shortcode_button:jquery_init_complete' );
 	};
 
-	$( btns.init );
+	$( btns.jQueryInit );
 
-} )( window, document, jQuery, QTags, shortcodeButtonsl10n, wp_sc_buttons );
+} )( window, document, jQuery, wp, QTags, shortcodeButtonsl10n, wp_sc_buttons );
