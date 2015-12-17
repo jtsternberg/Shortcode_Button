@@ -93,6 +93,10 @@ function shortcode_button_cmb_config( $button_data ) {
  * @return bool Expects a boolean value
  */
 function shortcode_button_only_pages() {
+	if ( ! is_admin() ) {
+		return false;
+	}
+
 	$current_screen = get_current_screen();
 
 	if ( ! isset( $current_screen->parent_base ) || $current_screen->parent_base != 'edit' ) {
