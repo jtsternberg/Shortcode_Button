@@ -13,7 +13,7 @@ class Shortcode_Button {
 	 * @var  string
 	 * @since  0.1.2
 	 */
-	const VERSION = '0.1.2';
+	const VERSION = '0.2.2';
 
 	protected $button_data = array();
 	protected $args        = array();

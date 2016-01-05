@@ -312,6 +312,8 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		// TODO: Reset all types
 		switch ( type ) {
 			case 'file':
+				$this.find( '.cmb2-upload-file-id' ).val( '' );
+				return $this.find( '.cmb2-media-status' ).html( '' );
 			case 'file-list':
 				return $this.find( '.cmb2-media-status' ).html( '' );
 			case 'colorpicker':
