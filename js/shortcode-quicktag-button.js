@@ -176,7 +176,6 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 		btn.openModal = function() {
 			btns.open( btn.$.wrap );
-			$c.modal.find( '.scb-insert' ).trigger( 'focus' );
 			$c.modal.one( 'click', '.scb-insert', btn.insert );
 			$( document ).on( 'keyup', btn.keyup );
 		};
@@ -370,19 +369,18 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 					$( el ).addClass( 'scbshow' );
 				}
 
-				var width  = $c.modal.outerWidth();
-				var height = $c.modal.outerHeight();
-				var css    = {};
+				var width   = $c.modal.outerWidth();
+				var height  = $c.modal.outerHeight();
+				var fromTop = window.innerHeight > ( height + (window.innerHeight * 0.3) ) ? 0.15 : 0.035;
+				var css     = {
+					top : window.scrollY + (window.innerHeight * fromTop)
+				};
 
 				if ( window.innerWidth > width ) {
 					css.left = (window.innerWidth - width) / 2;
 				}
 
-				if ( window.innerHeight > height ) {
-					css.top = (window.innerHeight * 0.15) + window.scrollY;
-				}
-
-				$c.modal.css( css );
+				$c.modal.css( css ).trigger( 'focus' );
 			} );
 
 		$c.wrap  = $( document.getElementById( 'scb-wrap' ) );

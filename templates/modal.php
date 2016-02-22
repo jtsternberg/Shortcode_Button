@@ -1,5 +1,5 @@
 <div id="scb-wrap" class="scb-wrap">
-	<div class="ui-dialog" id="scb-modal">
+	<div class="ui-dialog" id="scb-modal" tabindex="-1"><?php // http://stackoverflow.com/a/32912224 ?>
 		<div class="ui-dialog-titlebar">
 			<span class="ui-dialog-title scb-title">
 			</span>
