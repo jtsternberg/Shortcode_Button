@@ -3,7 +3,7 @@ if ( ! class_exists( 'Shortcode_Button' ) ) :
 /**
  * Tinymce and Quicktag buttons for outputting shortcodes
  *
- * @version 0.2.1
+ * @version 0.2.3
  */
 class Shortcode_Button {
 
@@ -13,7 +13,7 @@ class Shortcode_Button {
 	 * @var  string
 	 * @since  0.1.2
 	 */
-	const VERSION = '0.2.2';
+	const VERSION = '0.2.3';
 
 	protected $button_data = array();
 	protected $args        = array();

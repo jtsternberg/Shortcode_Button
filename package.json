@@ -1,6 +1,6 @@
 {
   "name": "Shortcode_Button",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Tinymce and Quicktag buttons for outputting shortcodes",
   "main": "Gruntfile.js",
   "repository": {

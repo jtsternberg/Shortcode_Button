@@ -129,6 +129,10 @@ function shortcode_button_only_pages() {
 
 #### Changelog
 
+* 0.2.3
+	* Fix focus issue when modal opens. ([#9](https://github.com/jtsternberg/Shortcode_Button/issues/9))
+	* Fix modal height/scroll issues when modal opens.
+
 * 0.2.2
 	* Remove hidden image id from CMB2 `file` field type when closing the modal.
 
