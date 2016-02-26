@@ -1,4 +1,4 @@
-# Created by http://www.gitignore.io
+# Created by https://www.gitignore.io/api/osx,node,grunt,composer,sass
 
 ### OSX ###
 .DS_Store
@@ -12,9 +12,13 @@ Icon
 # Thumbnails
 ._*
 
-# Files that might appear on external disk
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
 .Spotlight-V100
+.TemporaryItems
 .Trashes
+.VolumeIcon.icns
 
 # Directories potentially created on remote AFP share
 .AppleDB
@@ -28,6 +32,7 @@ Temporary Items
 # Logs
 logs
 *.log
+npm-debug.log*
 
 # Runtime data
 pids
@@ -43,15 +48,42 @@ coverage
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
+# node-waf configuration
+.lock-wscript
+
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-# Dependency directory
-# Deployed apps should consider commenting this line out:
-# see https://npmjs.org/doc/faq.html#Should-I-check-my-node_modules-folder-into-git
+# Dependency directories
 node_modules
+jspm_packages
 
-# Sass Cache
-*.sass-cache
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+
+### grunt ###
+# Grunt usually compiles files inside this directory
+dist/
+
+# Grunt usually preprocesses files such as coffeescript, compass... inside the .tmp directory
+.tmp/
+
+
+### Composer ###
+composer.phar
+/vendor/
+
+# Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file
+# You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
+# composer.lock
+
+
+### Sass ###
+.sass-cache/
+*.css.map
 
 dandelion.yml

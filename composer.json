@@ -1,0 +1,27 @@
+{
+    "name": "jtsternberg/shortcode-button",
+    "type": "wordpress-plugin",
+    "description": "Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with CMB2.",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "jtsternberg",
+            "email": "justin@dsgnwrks.pro",
+            "homepage": "http://dsgnwrks.pro/",
+            "role": "Developer"
+        }
+    ],
+    "keywords": ["wordpress", "shortcodes", "CMB2"],
+    "homepage": "https://github.com/jtsternberg/Shortcode_Button",
+    "support": {
+        "issues": "https://github.com/jtsternberg/Shortcode_Button/issues",
+        "source": "https://github.com/jtsternberg/Shortcode_Button"
+    },
+    "require": {
+        "php": ">5.2"
+    },
+    "autoload": {
+        "classmap": ["shortcode-button.php"]
+    },
+    "minimum-stability": "dev"
+}
