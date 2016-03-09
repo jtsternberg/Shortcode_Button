@@ -118,7 +118,15 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 				if ( 'sc_content' === key ) {
 					content = value;
 				} else {
-					shortcode += ' '+ key +'="'+ value +'"';
+					// check if cmb2 value is an object
+					if( typeof value === 'object' ) {
+						$.each( value[0], function( key, value ) {
+							shortcode += ' '+ key +'="'+ value +'"';
+						});
+					} else {
+						shortcode += ' '+ key +'="'+ value +'"';
+					}
+
 				}
 			});
 
