@@ -53,9 +53,6 @@ $additional_args = array(
 
 	// Use if you are not using CMB2 to generate the form fields
 	// 'form_display_callback' => '',
-
-	// Only set if the javascript files cannot be found
-	// 'scripts_url' => '',
 );
 
 $button = new Shortcode_Button( $button_slug, $js_button_data, $additional_args );
