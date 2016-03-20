@@ -362,13 +362,20 @@ class Shortcode_Button {
 	 */
 	public static function ajax_parse_shortcode() {
 		global $wp_scripts;
+		static $once = false;
+
+		if ( $once ) {
+			return;
+		}
+		$once = true;
 
 		if ( empty( $_POST['shortcode'] ) ) {
 			wp_send_json_error();
 		}
 
-		$slug = sanitize_text_field( wp_unslash( $_POST['shortcode'] ) );
-		$shortcode = do_shortcode( $slug );
+		$slug = sanitize_text_field( $_POST['type'] );
+		$full_shortcode = wp_kses_post( wp_unslash( $_POST['shortcode'] ) );
+		$shortcode = do_shortcode( $full_shortcode );
 
 		if ( empty( $shortcode ) ) {
 			wp_send_json_error( array(
