@@ -312,13 +312,9 @@ class Shortcode_Button {
 	 * @return array         Array of sanitized fields
 	 */
 	public function sanitize_cmb_fields( $fields ) {
-		$cmb = $this->get_cmb_object();
-
-		$cmb->data_to_save = $fields;
+		$cmb       = $this->get_cmb_object();
 		$object_id = $cmb->object_id( $this->button_slug );
-		$cmb->object_type( 'options-page' );
-
-		$cmb->process_fields();
+		$allvalues = $cmb->get_sanitized_values( $fields );
 
 		// output buffer on the action so we don't pollute our JSON response
 		ob_start();
@@ -326,23 +322,22 @@ class Shortcode_Button {
 		do_action( 'cmb2_save_options-page_fields', $object_id, $cmb->cmb_id, $cmb->updated, $cmb );
 		ob_end_clean();
 
-		$updated_fields = cmb2_options( $object_id )->get_options();
-		$cmb_config     = $this->get_cmb_config();
+		$cmb_config = $this->get_cmb_config();
+		$values     = array();
 
-		$whitelist_keys = wp_list_pluck( $cmb_config['fields'], 'id' );
-		$whitelist      = array();
 		// Keep only the form values that correspond to the CMB2 fields
-		foreach ( $whitelist_keys as $key ) {
-			$value = isset( $updated_fields[ $key ] ) && ! empty( $updated_fields[ $key ] ) ? $updated_fields[ $key ] : '';
+		foreach ( (array) wp_list_pluck( $cmb_config['fields'], 'id' ) as $key ) {
+
+			$value = isset( $allvalues[ $key ] ) && ! empty( $allvalues[ $key ] ) ? $allvalues[ $key ] : '';
 
 			// Don't keep empty values
 			if ( $value ) {
 				// Make checkbox values boolean
-				$whitelist[ $key ] = 'on' == $value ? true : $value;
+				$values[ $key ] = 'on' == $value ? true : $value;
 			}
 		}
 
-		return $this->filter_form_fields( $whitelist, $updated_fields );
+		return $this->filter_form_fields( $values, $allvalues );
 	}
 
 	/**
@@ -356,9 +351,10 @@ class Shortcode_Button {
 	 *
 	 * @return array              Filtered field values
 	 */
-	function filter_form_fields( $fields, $unmodified_fields = array() ) {
+	function filter_form_fields( $updated, $allvalues = array() ) {
 		// Pass updated form values through a filter and return
-		return (array) apply_filters( "{$this->button_slug}_shortcode_fields", $fields, $this, empty( $unmodified_fields ) ? $fields : $unmodified_fields );
+		$filtered = (array) apply_filters( "{$this->button_slug}_shortcode_fields", $updated, $this, empty( $allvalues ) ? $updated : $allvalues );
+		return $filtered;
 	}
 
 	/**
