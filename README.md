@@ -1,10 +1,10 @@
-WordPress Shortcode Button
+WordPress Shortcode Button (1.0.0)
 ================
 
 Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with [CMB2](https://github.com/WebDevStudios/CMB2).
 
 #### Todo:
-* Properly style CMB2 fields in modal
+* Testing with all CMB2 field types
 
 ### Example Use
 
@@ -33,6 +33,7 @@ $js_button_data = array(
 	'infourl'        => 'https://github.com/jtsternberg/Shortcode_Button',
 	'version'        => '1.0.0',
 	'include_close'  => true, // Will wrap your selection in the shortcode
+	'mceView'        => true, // Live preview of shortcode in editor. YMMV.
 
 	// Use your own textdomain
 	'l10ncancel'     => __( 'Cancel', 'shortcode-button' ),
@@ -125,6 +126,15 @@ function shortcode_button_only_pages() {
 
 
 #### Changelog
+
+* 1.0.0
+	* Add a conflict-resolution loader (like CMB2), so that only one version of Shortcode_Button is loaded, and it always loads the newest version.
+	* Use WordPress core `wp.shortcode()` javascript api.
+	* Better handling for populating edit modal with CMB2 defaults, if set.
+	* A _bunch_ of fixes for when `'mceView'` is enabled:
+		* Add a wysiwyg editor to the edit modal to handle wrapping shortcodes (`'include_close'`)
+		* Better handling for populating edit modal with contents of shortcode being edited.
+		* Better shortcode rendering in mce view. Your mileage may vary.
 
 * 0.2.3
 	* Fix focus issue when modal opens. ([#9](https://github.com/jtsternberg/Shortcode_Button/issues/9))

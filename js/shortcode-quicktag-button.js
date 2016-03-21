@@ -20,13 +20,16 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 	var Button = function( params ) {
 		var btn = {
-			params   : params,
-			isVisual : false,
-			editMode : false,
-			postID   : 0,
-			content  : '',
-			mceView  : {},
-			$        : {}
+			originalEditor : '',
+			params         : params,
+			values         : false,
+			isVisual       : false,
+			editMode       : false,
+			postID         : 0,
+			content        : '',
+			givenContent   : '',
+			mceView        : {},
+			$              : {}
 		};
 		var cached = false;
 
@@ -37,6 +40,9 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 			btn.$.wrap = $( document.getElementById( params.slug +'-form' ) );
 			btn.$.form = btn.$.wrap.length ? btn.$.wrap.find( 'form' ) : false;
+			btn.$.editor = btn.$.wrap.length ? btn.$.form.find( '.wp-editor-area' ).first() : false;
+			btn.$.editor = btn.$.editor.length ? btn.$.editor : false;
+
 			btn.postID = $( '#post_ID' ).val() || 0;
 			cached = true;
 		};
@@ -54,8 +60,9 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 		btn.insert = function() {
 			var ajaxData = {
-				fields : btn.$.form ? btn.$.form.serialize() : {},
-				action : 'wp_sc_form_process_'+ params.slug,
+				fields  : btn.$.form ? btn.$.form.serialize() : {},
+				content : btn.shortcodeContent(),
+				action  : 'wp_sc_form_process_'+ params.slug,
 			};
 
 			var formFail = function( response ) {
@@ -76,6 +83,27 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			})
 			.fail( formFail );
 
+		};
+
+		btn.shortcodeContent = function() {
+			var content = '';
+
+			// If we have a sc content editor
+			if ( btn.$.editor ) {
+				// Get contents of quicktag edit textarea
+				content = btn.$.editor.val();
+
+				// If the tinymce/visual editor is active...
+				if ( btn.$.editor.parents( '.wp-editor-wrap' ).hasClass( 'tmce-active' ) ) {
+					// Then get our editor instance, and the content from that view.
+					var editor = window.tinymce.get( btn.$.editor.attr( 'id' ) );
+					if ( editor ) {
+						content = editor.getContent();
+					}
+				}
+			}
+
+			return content;
 		};
 
 		btn.getSelectedText = function() {
@@ -108,28 +136,29 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			return '';
 		};
 
-		btn.buildShortCode = function( shortcode_params ) {
+		btn.buildShortCode = function( scparams ) {
+			var selectedContent = btn.getSelectedText();
+			var newContent = '';
 
-			var shortcode = '['+ params.slug;
-			var selected_text = btn.getSelectedText();
-			var content = '';
-
-			$.each( shortcode_params, function( key, value ) {
-				if ( 'sc_content' === key ) {
-					content = value;
-				} else {
-					shortcode += ' '+ key +'="'+ value +'"';
-				}
-			});
-
-			shortcode += ']';
-
-			// Force closing if we are indeed supposed to
-			if ( params.include_close || content ) {
-				shortcode = shortcode + selected_text + content + '[/' + params.slug + ']';
+			// back-compat. for sc_content
+			if ( scparams.sc_content ) {
+				scparams.sccontent = scparams.sc_content;
+				delete scparams.sc_content;
 			}
 
-			return shortcode;
+			if ( scparams.sccontent ) {
+				btn.givenContent = newContent = btn.content = scparams.sccontent;
+				delete scparams.sccontent;
+			}
+
+			var options = {
+				tag     : params.slug,
+				attrs   : scparams,
+				type    : params.include_close ? 'closed' : 'single',
+				content : btn.params.mceView ? newContent : selectedContent + newContent,
+			};
+
+			return new wp.shortcode( options ).string();
 		};
 
 		btn.insertCallback = function( shortcode_params ) {
@@ -142,8 +171,12 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			if ( btn.editMode ) {
 				btn.editMode( shortcode );
 			} else if ( btn.isVisual && btns.visualmode[ params.slug ] ) {
+				// Insert the shortcode to the visual mode editor
 				btns.visualmode[ params.slug ].execCommand( 'mceInsertContent', 0, shortcode );
 			} else {
+				// reset active editor to original editor
+				window.wpActiveEditor = btn.originalEditor;
+				// And insert the shortcode
 				QTags.insertContent( shortcode );
 			}
 
@@ -162,6 +195,44 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			$c.modal.find( '.scb-title' ).text( params.button_tooltip );
 			$c.modal.find( '.scb-cancel' ).text( params.l10ncancel );
 			$c.modal.find( '.scb-insert' ).text( btn.editMode ? params.l10nupdate : params.l10ninsert );
+
+			btn.maybePopulate();
+		};
+
+		btn.maybePopulate = function() {
+			if ( btn.values ) {
+				btn.triggerPopulation( btn.values );
+				btn.values = false;
+				return;
+			}
+
+			var attrs = {};
+			var has = false;
+			if ( params.cmb && params.cmb.fields ) {
+				var field;
+				var i;
+				for ( i = 0; i < params.cmb.fields.length; i++ ) {
+					field = params.cmb.fields[i];
+					if ( field.default && field.id ) {
+						has = true;
+						attrs[ field.id ] = field.default;
+					}
+				}
+			}
+
+			if ( has ) {
+				btn.triggerPopulation( attrs );
+			}
+		};
+
+		btn.triggerPopulation = function( attrs ) {
+			$.each( attrs, function( name ) {
+				btn.$.form.find( '[name="' + name + '"]' ).trigger( 'shortcode_button:populate', { btn : btn, attrs: attrs, name: name } );
+			} );
+
+			if ( btn.$.editor ) {
+				btn.$.editor.trigger( 'shortcode_button:populate', { btn : btn, attrs: attrs, name: btn.$.editor.attr( 'name' ), type : 'wysiwyg' } );
+			}
 		};
 
 		btn.keyup = function( evt ) {
@@ -175,6 +246,7 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		};
 
 		btn.openModal = function() {
+			btn.originalEditor = window.wpActiveEditor;
 			btns.open( btn.$.wrap );
 			$c.modal.one( 'click', '.scb-insert', btn.insert );
 			$( document ).on( 'keyup', btn.keyup );
@@ -187,6 +259,10 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 				btn.isVisual = true;
 			} else {
 				btn.isVisual = true === isVisual;
+				// We don't want to be in edit mode on the html side, since we can only do inserts.
+				if ( ! btn.isVisual ) {
+					btn.editMode = false;
+				}
 			}
 
 			btn.cache();
@@ -207,25 +283,32 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		if ( btn.params.mceView ) {
 			/**
 			 * TODO
-			 * - Make selected content (for self-closing shortcodes) be editable.
-			 *   Probably append an editor to the modal?
+			 * X Make selected content (for self-closing shortcodes) be editable.
+			 *   This is mostly done.
 			 * - Document process for properly displaying rendered shortcode.
-			 * - Populate modal fields with attribute values.
+			 * X Populate modal fields with attribute values.
+			 *   This is mostly done.
 			 */
 
 			btn.mceView = {
-				action: 'scb_parse_shortcode',
-				state: [],
+				action : 'scb_parse_shortcode',
+				state  : [],
+				sc     : false
 			};
 
 			btn.mceView.initialize = function() {
 				var that = this;
+				btn.mceView.sc = that.shortcode;
 
 				if ( that.url ) {
 					that.loader = false;
 					that.shortcode = wp.media.embed.shortcode( {
 						url: that.text
 					} );
+				}
+
+				if ( btn.givenContent ) {
+					that.shortcode.content = btn.givenContent;
 				}
 
 				// Cache content property.
@@ -254,21 +337,12 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			};
 
 			btn.mceView.edit = function( text, update ) {
-
 				if ( ! this.shortcode.attrs || ! this.shortcode.attrs.named ) {
 					return;
 				}
-
+				btn.values = this.shortcode.attrs.named;
 				btn.cache();
-
-				var attrs = this.shortcode.attrs.named;
-
-				btns.log( 'attrs', attrs, this.shortcode.attrs );
-
 				$c.modal.find( '.scb-insert' ).text( params.l10nupdate );
-
-				btn.$.form.find( '[class^="cmb-row cmb-type-"]' ).trigger( 'shortcode_button:populate', { btn : btn, attrs: attrs } );
-
 				btn.click( update );
 			};
 		}
@@ -310,6 +384,8 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 		// TODO: Reset all types
 		switch ( type ) {
+			case 'text':
+				return $this.find( '[type="text"]' ).val( '' );
 			case 'file':
 				$this.find( '.cmb2-upload-file-id' ).val( '' );
 				return $this.find( '.cmb2-media-status' ).html( '' );
@@ -321,30 +397,40 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 	};
 
 	btns._populateFields = function( evt, _data ) {
-		var $field = $( evt.target );
-		var classes = $field.attr( 'class' ).replace( 'cmb-row cmb-type-', '' ).split( ' ' );
-		var data = $.extend( true, {}, _data );
+		var $field  = $( evt.target );
+		var $row    = $field.parents( '[class^="cmb-row cmb-type-"]' );
+		var classes = $row.attr( 'class' ).replace( 'cmb-row cmb-type-', '' ).split( ' ' );
+		var data    = $.extend( true, {}, _data );
+		var btn     = data.btn;
 		data.type = classes[0];
-		data.name = classes[1].replace( 'cmb2-id-', '' ).split( ' ' )[0];
 		data.value = data.attrs[ data.name ] ? data.attrs[ data.name ] : '';
 
-		if ( data.btn.populateField ) {
-			return data.btn.populateField( $field, data );
+		// Allow override
+		if ( btn.populateField ) {
+			return btn.populateField( $field, data );
 		}
 
-		return btns._populateField( $field, data );
-	};
-
-	btns._populateField = function( $field, data ) {
 		// TODO: Set fields for all types
 		switch ( data.type ) {
 			case 'text':
-				return $field.find( '[name=' + data.name + ']' ).val( data.value );
+			case 'textarea':
+				return $field.val( data.value );
+			case 'colorpicker':
+				return $field.wpColorPicker( 'color', data.value );
 			case 'radio':
 			case 'radio_inline':
 			case 'multicheck':
-				$field.find( '[name=' + data.name + '][checked]' ).removeAttr( 'checked' );
-				return $field.find( '[name=' + data.name + '][value=' + data.value + ']' ).prop( 'checked', 1 );
+				$row.find( '[name=' + data.name + '][checked]' ).removeAttr( 'checked' );
+				return $field.prop( 'checked', 1 );
+			case 'wysiwyg':
+				// Set html mode content
+				btn.$.editor.val( btn.content );
+				var editor = window.tinymce.get( btn.$.editor.attr( 'id' ) );
+				if ( editor ) {
+					// Set visual mode content
+					// editor.setContent( btn.content );
+				}
+				return;
 		}
 	};
 
