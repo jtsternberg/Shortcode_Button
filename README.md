@@ -3,6 +3,8 @@ WordPress Shortcode Button (1.0.0)
 
 Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with [CMB2](https://github.com/WebDevStudios/CMB2).
 
+Checkout the "[Cool Shortcode](https://github.com/jtsternberg/Cool-Shortcode)" demo plugin which demonstrates how to use [WDS-Shortcodes](https://github.com/WebDevStudios/WDS-Shortcodes) and this library.
+
 #### Todo:
 * Testing with all CMB2 field types
 
