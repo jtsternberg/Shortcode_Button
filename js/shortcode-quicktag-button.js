@@ -51,6 +51,7 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			if ( btn.$.form ) {
 				btn.$.form.trigger( 'reset' );
 				btn.$.form.find( '[class^="cmb-row cmb-type-"]' ).trigger( 'shortcode_button:clear' );
+				btn.$.form.find( '.cmb-row.cmb-repeat-group-wrap' ).trigger( 'shortcode_button:clear' );
 			}
 
 			$( document ).off( 'keyup', btn.keyup );
@@ -380,7 +381,8 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 	btns.clearFields = function( evt ) {
 		var $this = $( evt.target );
-		var type = $this.attr( 'class' ).replace( 'cmb-row cmb-type-', '' ).split( ' ' )[0];
+		var classes = $this.attr( 'class' );
+		var type = $this.hasClass( 'cmb-repeat-group-wrap' ) ? 'group' : classes.replace( 'cmb-row cmb-type-', '' ).split( ' ' )[0];
 
 		// TODO: Reset all types
 		switch ( type ) {
@@ -393,6 +395,8 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 				return $this.find( '.cmb2-media-status' ).html( '' );
 			case 'colorpicker':
 				return $this.find( '.wp-picker-clear' ).click();
+			case 'group':
+				return $this.find( '.cmb-repeatable-grouping:not(:first-child)' ).remove();
 		}
 	};
 
