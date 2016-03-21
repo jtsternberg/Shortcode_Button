@@ -394,6 +394,18 @@ class Shortcode_Button {
 	function filter_form_fields( $updated, $allvalues = array() ) {
 		// Pass updated form values through a filter and return
 		$filtered = (array) apply_filters( "{$this->button_slug}_shortcode_fields", $updated, $this, empty( $allvalues ) ? $updated : $allvalues );
+
+		foreach ( $filtered as $key => $value ) {
+			// If value is an array, we need to create a modified JSON-encoded string.
+			if ( is_array( $value ) ) {
+				$filtered[ $key ] = str_replace(
+					array( '"', '[', ']' ),
+					array( "'", '|~', '~|' ),
+					wp_json_encode( $value )
+				);
+			}
+		}
+
 		return $filtered;
 	}
 

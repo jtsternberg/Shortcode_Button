@@ -1,4 +1,4 @@
-WordPress Shortcode Button (1.0.0)
+WordPress Shortcode Button (1.0.1)
 ================
 
 Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with [CMB2](https://github.com/WebDevStudios/CMB2).
@@ -128,6 +128,9 @@ function shortcode_button_only_pages() {
 
 
 #### Changelog
+
+* 1.0.1
+	* Handle repeatable groups for attribute values (or any array value) with a modified JSON string (which will need to be converted in your shortcode).
 
 * 1.0.0
 	* Add a conflict-resolution loader (like CMB2), so that only one version of Shortcode_Button is loaded, and it always loads the newest version.

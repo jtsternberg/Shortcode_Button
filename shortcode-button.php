@@ -4,9 +4,9 @@
  *
  * @todo Fix generic ids possibly conflicting (maybe add a prefix to all fields)
  *
- * @version 1.0.0
+ * @version 1.0.1
  */
-if ( ! class_exists( 'Shortcode_Button_100', false ) ) {
+if ( ! class_exists( 'Shortcode_Button_101', false ) ) {
 
 	/**
 	 * Handles checking for and loading the newest version of Shortcode_Button
@@ -19,14 +19,14 @@ if ( ! class_exists( 'Shortcode_Button_100', false ) ) {
 	 * @license   GPL-2.0+
 	 * @link      http://webdevstudios.com
 	 */
-	class Shortcode_Button_100 {
+	class Shortcode_Button_101 {
 
 		/**
 		 * Current version number
 		 * @var   string
 		 * @since 1.0.0
 		 */
-		const VERSION = '1.0.0';
+		const VERSION = '1.0.1';
 
 		/**
 		 * Current version hook priority.
@@ -35,7 +35,7 @@ if ( ! class_exists( 'Shortcode_Button_100', false ) ) {
 		 * @var   int
 		 * @since 1.0.0
 		 */
-		const PRIORITY = 9999;
+		const PRIORITY = 9998;
 
 		/**
 		 * Starts the version checking process.
@@ -92,5 +92,5 @@ if ( ! class_exists( 'Shortcode_Button_100', false ) ) {
 	}
 
 	// Make it so...
-	new Shortcode_Button_100;
+	new Shortcode_Button_101;
 }
