@@ -68,7 +68,7 @@ if ( ! class_exists( 'Shortcode_Button_101', false ) ) {
 		 * A final check if Shortcode_Button exists before kicking off our
 		 * Shortcode_Button loading.
 		 *
-		 * SHORTCODE_BUTTONS_VERSION and CMB2_DIR constants are set at this point.
+		 * SHORTCODE_BUTTONS_VERSION and SHORTCODE_BUTTONS_DIR constants are set at this point.
 		 *
 		 * @since  1.0.0
 		 */
