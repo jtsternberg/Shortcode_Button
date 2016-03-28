@@ -1,5 +1,4 @@
 <?php
-if ( ! class_exists( 'Shortcode_Button' ) ) :
 /**
  * Tinymce and Quicktag buttons for outputting shortcodes
  *
@@ -501,5 +500,3 @@ class Shortcode_Button {
 		}
 	}
 }
-
-endif; // end class_exists check
