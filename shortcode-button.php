@@ -97,21 +97,24 @@ if ( ! class_exists( 'Shortcode_Button_102', false ) ) {
 			add_action( 'shortcode_button_load', array( $this, 'include_lib' ), self::PRIORITY );
 
 			/*
-			 * Hook in to plugins_loaded, the first available hook
-			 * to all plugins/themes
+			 * Hook in to the first hook we have available and
+			 * fire our `shortcode_button_load' hook.
 			 */
-			add_action( 'plugins_loaded', array( $this, 'do_hook' ), 9 );
+			add_action( 'muplugins_loaded', array( __CLASS__, 'fire_hook' ), 9 );
+			add_action( 'plugins_loaded', array( __CLASS__, 'fire_hook' ), 9 );
+			add_action( 'after_setup_theme', array( __CLASS__, 'fire_hook' ), 9 );
 		}
 
 		/**
-		 * Fires the shortcode_button_load action hook
-		 * (from the plugins_loaded hook).
+		 * Fires the shortcode_button_load action hook.
 		 *
 		 * @since 1.0.0
 		 */
-		public function do_hook() {
-			// Then fire our hook.
-			do_action( 'shortcode_button_load' );
+		public static function fire_hook() {
+			if ( ! did_action( 'shortcode_button_load' ) ) {
+				// Then fire our hook.
+				do_action( 'shortcode_button_load' );
+			}
 		}
 
 		/**
