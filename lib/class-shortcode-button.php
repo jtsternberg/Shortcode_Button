@@ -4,7 +4,7 @@
  *
  * @todo Fix generic ids possibly conflicting (maybe add a prefix to all fields)
  *
- * @version 1.0.0
+ * @version 1.0.3
  */
 class Shortcode_Button {
 
@@ -14,7 +14,7 @@ class Shortcode_Button {
 	 * @var  string
 	 * @since  0.1.2
 	 */
-	const VERSION = '1.0.0';
+	const VERSION = SHORTCODE_BUTTONS_VERSION;
 
 	protected $button_data = array();
 	protected $args        = array();

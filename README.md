@@ -1,4 +1,4 @@
-WordPress Shortcode Button (1.0.2)
+WordPress Shortcode Button (1.0.3)
 ================
 
 Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with [CMB2](https://github.com/WebDevStudios/CMB2).
@@ -128,6 +128,9 @@ function shortcode_button_only_pages() {
 
 
 #### Changelog
+
+* 1.0.3
+	* Hide modal manually to ensure it is hidden before CSS loads. Prevents flash of content.
 
 * 1.0.2
 	* Fix broken loader. Needs to hook into a WordPress hook, and uses first available (`'muplugins_loaded'`, `'plugins_loaded'`, `'after_setup_theme'`) to fire the include action.
