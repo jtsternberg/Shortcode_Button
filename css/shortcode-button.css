@@ -1,6 +1,3 @@
-#scb-wrap {
-	display: none;
-}
 #scb-wrap.scbshow {
 	display: block;
 }

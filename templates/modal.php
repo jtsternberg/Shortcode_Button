@@ -1,3 +1,4 @@
+<style type="text/css" media="screen">#scb-wrap{display:none;}</style>
 <div id="scb-wrap" class="scb-wrap">
 	<div class="ui-dialog" id="scb-modal" tabindex="-1"><?php // http://stackoverflow.com/a/32912224 ?>
 		<div class="ui-dialog-titlebar">
