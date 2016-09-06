@@ -18,6 +18,7 @@ require_once( 'Shortcode_Button/shortcode-button.php' );
 
 // the button slug should be your shortcodes name.
 // The same value you would use in `add_shortcode`
+// Only numbers, letters and underscores are allowed.
 $button_slug = 'shortcode_name';
 
 // Set up the button data that will be passed to the javascript files
