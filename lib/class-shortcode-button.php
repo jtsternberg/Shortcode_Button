@@ -365,7 +365,8 @@ class Shortcode_Button {
 		$values     = array();
 
 		// Keep only the form values that correspond to the CMB2 fields
-		foreach ( (array) wp_list_pluck( $cmb_config['fields'], 'id' ) as $key ) {
+		foreach ( $cmb_config['fields'] as $field ) {
+			$key = $field['id'];
 
 			$value = isset( $allvalues[ $key ] ) && ! empty( $allvalues[ $key ] ) ? $allvalues[ $key ] : '';
 
@@ -373,6 +374,11 @@ class Shortcode_Button {
 			if ( $value ) {
 				// Make checkbox values boolean
 				$values[ $key ] = 'on' == $value ? true : $value;
+			}
+
+			if ( 'file' === $field['type'] ) {
+				// Handle file ID.
+				$values[ $key . '_id' ] = isset( $allvalues[ $key . '_id' ] ) ? $allvalues[ $key . '_id' ] : '';
 			}
 		}
 
