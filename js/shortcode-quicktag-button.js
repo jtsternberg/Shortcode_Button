@@ -10,6 +10,20 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 	var $c = {};
 	btns.qt = {};
 
+	var normalizeContent = function( content ) {
+		content = content.trim();
+
+		// Fix weird autop issues from tinymce.
+		if ( '<p>' === content.substr( content.length - 3 ) ) {
+			content = content.substr( 0, content.length - 3 ).trim();
+		}
+		if ( '<p>' !== content.substring( 0, 3 ) && '</p>' === content.substr( content.length - 4 ) ) {
+			content = '<p>' + content;
+		}
+
+		return content;
+	};
+
 	btns.log = function() {
 		btns.log.history = btns.log.history || [];
 		btns.log.history.push( arguments );
@@ -150,6 +164,10 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			if ( scparams.sccontent ) {
 				btn.givenContent = newContent = btn.content = scparams.sccontent;
 				delete scparams.sccontent;
+			}
+
+			if ( btn.givenContent ) {
+				btn.givenContent = normalizeContent( btn.givenContent );
 			}
 
 			var options = {
@@ -431,9 +449,9 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 				// Set html mode content
 				btn.$.editor.val( btn.content );
 				var editor = window.tinymce.get( btn.$.editor.attr( 'id' ) );
-				if ( editor ) {
+				if ( editor && btn.content ) {
 					// Set visual mode content
-					// editor.setContent( btn.content );
+					editor.setContent( normalizeContent( btn.content ) );
 				}
 				return;
 		}
