@@ -418,6 +418,7 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		switch ( data.type ) {
 			case 'text':
 			case 'textarea':
+			case 'file':
 				return $field.val( data.value );
 			case 'colorpicker':
 				return $field.wpColorPicker( 'color', data.value );
