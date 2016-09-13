@@ -359,6 +359,8 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 				if ( ! this.shortcode.attrs || ! this.shortcode.attrs.named ) {
 					return;
 				}
+
+				btn.content = this.shortcode.content;
 				btn.values = this.shortcode.attrs.named;
 				btn.cache();
 				$c.modal.find( '.scb-insert' ).text( params.l10nupdate );
