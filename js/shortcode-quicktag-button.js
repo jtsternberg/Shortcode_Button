@@ -246,7 +246,7 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 		btn.triggerPopulation = function( attrs ) {
 			$.each( attrs, function( name ) {
-				btn.$.form.find( '[name="' + name + '"]' ).trigger( 'shortcode_button:populate', { btn : btn, attrs: attrs, name: name } );
+				btn.$.form.find( '[name="' + name + '"], [name="' + name + '[]"]' ).trigger( 'shortcode_button:populate', { btn : btn, attrs: attrs, name: name } );
 			} );
 
 			if ( btn.$.editor ) {
@@ -442,11 +442,24 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 				return $field.val( data.value );
 			case 'colorpicker':
 				return $field.wpColorPicker( 'color', data.value );
+			case 'multicheck':
+			case 'multicheck_inline':
+			case 'multicheck-inline':
+				if ( data.value ) {
+					data.value = data.value.replace( /\|~/g, '[' ).replace( /~\|/g, ']' ).replace( /\'/g, '"' );
+					try {
+						data.value = $.parseJSON( data.value );
+					} catch( e ) {
+						data.value = [ data.value ];
+					}
+				} else {
+					data.value = [ data.value ];
+				}
+				return $field.prop( 'checked', -1 !== $.inArray( $field.val(), data.value ) );
 			case 'radio':
 			case 'radio_inline':
-			case 'multicheck':
-				$row.find( '[name=' + data.name + '][checked]' ).removeAttr( 'checked' );
-				return $field.prop( 'checked', 1 );
+			case 'radio-inline':
+				return $field.prop( 'checked', data.value === $field.val() );
 			case 'wysiwyg':
 				// Set html mode content
 				btn.$.editor.val( btn.content );
