@@ -1,4 +1,4 @@
-WordPress Shortcode Button (1.0.4)
+WordPress Shortcode Button (1.0.5)
 ================
 
 Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with [CMB2](https://github.com/WebDevStudios/CMB2).
@@ -129,6 +129,12 @@ function shortcode_button_only_pages() {
 
 
 #### Changelog
+
+* 1.0.5
+	* Fix incorrect content displaying when editing shortcodes with self-closing tags and content.
+	* Fix radio button 'checked' value displays when editing shortcode.
+	* Fix multicheck checkboxes 'selected' value displays when editing shortcode.
+	* Fix select 'selected' value displays when editing shortcode.
 
 * 1.0.4
 	* Make sure "file" field type inputs are populated when using MCE views and editing a shortcode.

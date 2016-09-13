@@ -10,7 +10,7 @@
  * @author    Justin Sternberg <justin@dsgnwrks.pro>
  * @copyright 2015-2016 Justin Sternberg <justin@dsgnwrks.pro>
  * @license   GPL-2.0+
- * @version   1.0.4
+ * @version   1.0.5
  * @link      https://github.com/jtsternberg/Shortcode_Button
  * @since     1.0.0
  */
@@ -37,7 +37,7 @@
  * Loader versioning: http://jtsternberg.github.io/wp-lib-loader/
  */
 
-if ( ! class_exists( 'Shortcode_Button_104', false ) ) {
+if ( ! class_exists( 'Shortcode_Button_105', false ) ) {
 
 	/**
 	 * Versioned loader class-name
@@ -48,18 +48,18 @@ if ( ! class_exists( 'Shortcode_Button_104', false ) ) {
 	 * @package  Shortcode_Button
 	 * @author   Justin Sternberg <justin@dsgnwrks.pro>
 	 * @license  GPL-2.0+
-	 * @version  1.0.4
+	 * @version  1.0.5
 	 * @link     https://github.com/jtsternberg/Shortcode_Button
 	 * @since    1.0.0
 	 */
-	class Shortcode_Button_104 {
+	class Shortcode_Button_105 {
 
 		/**
 		 * Shortcode_Button version number
 		 * @var   string
 		 * @since 1.0.0
 		 */
-		const VERSION = '1.0.4';
+		const VERSION = '1.0.5';
 
 		/**
 		 * Current version hook priority.
@@ -68,7 +68,7 @@ if ( ! class_exists( 'Shortcode_Button_104', false ) ) {
 		 * @var   int
 		 * @since 1.0.0
 		 */
-		const PRIORITY = 9995;
+		const PRIORITY = 9994;
 
 		/**
 		 * Starts the version checking process.
@@ -152,5 +152,5 @@ if ( ! class_exists( 'Shortcode_Button_104', false ) ) {
 	}
 
 	// Kick it off.
-	new Shortcode_Button_104;
+	new Shortcode_Button_105;
 }
