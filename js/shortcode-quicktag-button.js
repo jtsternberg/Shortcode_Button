@@ -460,6 +460,9 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			case 'radio_inline':
 			case 'radio-inline':
 				return $field.prop( 'checked', data.value === $field.val() );
+			case 'select':
+				$field.find( 'option' ).prop( 'selected', false );
+				return $field.find( 'option[value="' + data.value + '"]' ).prop( 'selected', true );
 			case 'wysiwyg':
 				// Set html mode content
 				btn.$.editor.val( btn.content );
