@@ -119,7 +119,7 @@ class Shortcode_Button {
 
 	// and tell tinymce where it lives
 	public function add_button( $plugin_array ) {
-		$plugin_array[ $this->button_slug ] = self::url( 'js/shortcode-button.js' );
+		$plugin_array[ $this->button_slug ] = plugins_url( '../js/shortcode-button.js', __FILE__ );
 		return $plugin_array;
 	}
 
@@ -147,10 +147,10 @@ class Shortcode_Button {
 
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
-		wp_enqueue_script( self::$handle, self::url( "js/shortcode-quicktag-button{$suffix}.js" ), array( 'jquery', 'quicktags' ), self::VERSION, true );
+		wp_enqueue_script( self::$handle, plugins_url( "../js/shortcode-quicktag-button{$suffix}.js", __FILE__ ), array( 'jquery', 'quicktags' ), self::VERSION, true );
 
 		// wp-jquery-ui-dialog css still needed as we're borrowing some dialog markup.
-		wp_enqueue_style( self::$handle, self::url( "css/shortcode-button{$suffix}.css" ), array( 'wp-jquery-ui-dialog' ), self::VERSION );
+		wp_enqueue_style( self::$handle, plugins_url( "../css/shortcode-button{$suffix}.css", __FILE__ ), array( 'wp-jquery-ui-dialog' ), self::VERSION );
 
 		wp_localize_script( self::$handle, 'shortcodeButtonsl10n', array_reverse( self::$buttons_data ) );
 
