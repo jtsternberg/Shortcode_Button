@@ -12,55 +12,58 @@ Checkout the "[Cool Shortcode](https://github.com/jtsternberg/Cool-Shortcode)" d
 
 ```php
 <?php
-
 // Include the library
 require_once( 'Shortcode_Button/shortcode-button.php' );
 
-// the button slug should be your shortcodes name.
-// The same value you would use in `add_shortcode`
-// Only numbers, letters and underscores are allowed.
-$button_slug = 'shortcode_name';
+function init_my_shortcode_button() {
 
-// Set up the button data that will be passed to the javascript files
-$js_button_data = array(
-	// Actual quicktag button text (on the text edit tab)
-	'qt_button_text' => __( 'Shortcode Button', 'shortcode-button' ),
-	// Tinymce button hover tooltip (on the html edit tab)
-	'button_tooltip' => __( 'Shortcode Button', 'shortcode-button' ),
-	// Tinymce button icon. Use a dashicon class or a 20x20 image url
-	'icon'           => 'dashicons-admin-appearance',
+	// the button slug should be your shortcodes name.
+	// The same value you would use in `add_shortcode`
+	// Only numbers, letters and underscores are allowed.
+	$button_slug = 'shortcode_name';
 
-	// Optional parameters
-	'author'         => 'Justin Sternberg',
-	'authorurl'      => 'http://dsgnwrks.pro',
-	'infourl'        => 'https://github.com/jtsternberg/Shortcode_Button',
-	'version'        => '1.0.0',
-	'include_close'  => true, // Will wrap your selection in the shortcode
-	'mceView'        => true, // Live preview of shortcode in editor. YMMV.
+	// Set up the button data that will be passed to the javascript files
+	$js_button_data = array(
+		// Actual quicktag button text (on the text edit tab)
+		'qt_button_text' => __( 'Shortcode Button', 'shortcode-button' ),
+		// Tinymce button hover tooltip (on the html edit tab)
+		'button_tooltip' => __( 'Shortcode Button', 'shortcode-button' ),
+		// Tinymce button icon. Use a dashicon class or a 20x20 image url
+		'icon'           => 'dashicons-admin-appearance',
 
-	// Use your own textdomain
-	'l10ncancel'     => __( 'Cancel', 'shortcode-button' ),
-	'l10ninsert'     => __( 'Insert Shortcode', 'shortcode-button' ),
+		// Optional parameters
+		'author'         => 'Justin Sternberg',
+		'authorurl'      => 'http://dsgnwrks.pro',
+		'infourl'        => 'https://github.com/jtsternberg/Shortcode_Button',
+		'version'        => '1.0.0',
+		'include_close'  => true, // Will wrap your selection in the shortcode
+		'mceView'        => true, // Live preview of shortcode in editor. YMMV.
 
-	// Optional modal settings override
-	// 'dialogClass' => 'wp-dialog',
-	// 'modalHeight' => 'auto',
-	// 'width'       => 500,
-);
+		// Use your own textdomain
+		'l10ncancel'     => __( 'Cancel', 'shortcode-button' ),
+		'l10ninsert'     => __( 'Insert Shortcode', 'shortcode-button' ),
 
-// Optional additional parameters
-$additional_args = array(
-	// Can be a callback or metabox config array
-	'cmb_metabox_config'   => 'shortcode_button_cmb_config',
-	// Set the conditions of the shortcode buttons
-	'conditional_callback' => 'shortcode_button_only_pages',
+		// Optional modal settings override
+		// 'dialogClass' => 'wp-dialog',
+		// 'modalHeight' => 'auto',
+		// 'width'       => 500,
+	);
 
-	// Use if you are not using CMB2 to generate the form fields
-	// 'form_display_callback' => '',
-);
+	// Optional additional parameters
+	$additional_args = array(
+		// Can be a callback or metabox config array
+		'cmb_metabox_config'   => 'shortcode_button_cmb_config',
+		// Set the conditions of the shortcode buttons
+		'conditional_callback' => 'shortcode_button_only_pages',
 
-$button = new Shortcode_Button( $button_slug, $js_button_data, $additional_args );
+		// Use if you are not using CMB2 to generate the form fields
+		// 'form_display_callback' => '',
+	);
 
+	$button = new Shortcode_Button( $button_slug, $js_button_data, $additional_args );
+}
+// This hook, with this priority ensures the Shortcode_Button library is loaded.
+add_action( 'shortcode_button_load', 'init_my_shortcode_button', ( SHORTCODE_BUTTONS_LOADED + 1 ) );
 
 /**
  * Return CMB2 config array
