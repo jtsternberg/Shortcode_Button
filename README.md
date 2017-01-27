@@ -97,7 +97,7 @@ function shortcode_button_cmb_config( $button_data ) {
  * @return bool Expects a boolean value
  */
 function shortcode_button_only_pages() {
-	if ( ! is_admin() ) {
+	if ( ! is_admin() || ! function_exists( 'get_current_screen' ) ) {
 		return false;
 	}
 
