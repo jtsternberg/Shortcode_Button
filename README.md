@@ -1,4 +1,4 @@
-WordPress Shortcode Button (1.0.5)
+WordPress Shortcode Button (1.0.6)
 ================
 
 Tinymce and Quicktag buttons (and modals) for outputting shortcodes. Built to work with [CMB2](https://github.com/WebDevStudios/CMB2).
@@ -132,6 +132,9 @@ function shortcode_button_only_pages() {
 
 
 #### Changelog
+
+* 1.0.6
+	* Remove the custom recursive QTags button in the shortcode modal wysiwyg editor. Props (@nonsensecreativity)[https://github.com/nonsensecreativity], (#14)[https://github.com/jtsternberg/Shortcode_Button/pull/14].
 
 * 1.0.5
 	* Fix incorrect content displaying when editing shortcodes with self-closing tags and content.

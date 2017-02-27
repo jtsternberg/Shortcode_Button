@@ -4,7 +4,7 @@
  *
  * @todo Fix generic ids possibly conflicting (maybe add a prefix to all fields)
  *
- * @version 1.0.5
+ * @version 1.0.6
  */
 class Shortcode_Button {
 
