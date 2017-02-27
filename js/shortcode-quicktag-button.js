@@ -28,7 +28,7 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 	 * Event handler to remove the custom Quicktags button
 	 * from wysiwyg editor added to shortcode modal if "include_close" is set to true,
 	 * by hooking into the "quicktags-init" event
-	 * 
+	 *
 	 * @param {document#event:quicktags-init} evt
 	 * @param {object} ed - The current quicktags editor instance
 	 * @see {@link https://github.com/WordPress/WordPress/blob/master/wp-includes/js/quicktags.js#L266-L325|WordPress Quicktags}
@@ -36,12 +36,14 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 	 * @see {@link https://github.com/WebDevStudios/WDS-Shortcodes/issues/7|WDS-Shortcodes Issue #7}
 	 */
 	var removeQTagsButton = function( evt, ed ) {
-		if( ed.id === 'sccontent' && btns.qt ) {
-			for( var id in btns.qt ) {
+		var id;
+		if ( 'sccontent' === ed.id && btns.qt ) {
+			for ( id in btns.qt ) {
 				// Remove the HTML element from the quicktags editor toolbar
-				ed.toolbar.removeChild( QTags.getInstance('sccontent').getButtonElement(id));
+				ed.toolbar.removeChild( QTags.getInstance( 'sccontent' ).getButtonElement( id ) );
+
 				// Remove the custom button object from the quicktags editor
-				delete ed.theButtons[id];
+				delete ed.theButtons[ id ];
 			}
 		}
 	};
