@@ -4,7 +4,7 @@
  *
  * @todo Fix generic ids possibly conflicting (maybe add a prefix to all fields)
  *
- * @version 1.0.6
+ * @version 1.0.7
  */
 class Shortcode_Button {
 
@@ -16,9 +16,10 @@ class Shortcode_Button {
 	 */
 	const VERSION = SHORTCODE_BUTTONS_VERSION;
 
-	protected $button_data = array();
-	protected $args        = array();
-	protected $index       = 0;
+	protected $button_slug         = '';
+	protected $button_data         = array();
+	protected $args                = array();
+	protected $index               = 0;
 	protected static $handle       = 'shortcode_button';
 	protected static $enqueued     = false;
 	protected static $buttons_data = array();
@@ -93,7 +94,7 @@ class Shortcode_Button {
 
 		add_action( 'admin_footer', array( $this, 'get_cmb_config' ), 6 );
 		add_action( 'admin_footer', array( __CLASS__, 'add_quicktag_button_script' ), 7 );
-		add_action( 'wp_ajax_scb_parse_shortcode', array( __CLASS__, 'ajax_parse_shortcode' ) );
+		add_action( 'wp_ajax_scb_parse_shortcode', array( $this, 'ajax_parse_shortcode' ) );
 
 		if ( ! self::$scripts_url ) {
 			$url = set_url_scheme( str_ireplace( ABSPATH, site_url( '/' ), self::$dir ) );
@@ -171,7 +172,7 @@ class Shortcode_Button {
 			return;
 		}
 
-		// Determine if we should use CMB or generic form callback.
+		// Determine if we should use CMB2 or generic form callback.
 		$callback    = $this->form_callback();
 		$cmb_config  = $this->get_cmb_config();
 		$is_callable = is_callable( $callback );
@@ -417,57 +418,23 @@ class Shortcode_Button {
 	/**
 	 * Parse shortcode for display within a TinyMCE view.
 	 */
-	public static function ajax_parse_shortcode() {
-		global $wp_scripts;
-		static $once = false;
-
-		if ( $once ) {
-			return;
-		}
-		$once = true;
-
-		if ( empty( $_POST['shortcode'] ) ) {
+	public function ajax_parse_shortcode() {
+		if ( empty( $_POST['type'] ) ) {
 			wp_send_json_error();
 		}
 
-		$slug = sanitize_text_field( $_POST['type'] );
-		$full_shortcode = wp_kses_post( wp_unslash( $_POST['shortcode'] ) );
-		$shortcode = do_shortcode( $full_shortcode );
-
-		if ( empty( $shortcode ) ) {
-			wp_send_json_error( array(
-				'type' => 'no-items',
-				'message' => __( 'No items found.' ),
-			) );
+		if ( $this->button_slug !== $_POST['type'] ) {
+			return;
 		}
 
-		$head  = '';
-		$styles = wpview_media_sandbox_styles();
+		require_once trailingslashit( dirname( __FILE__ ) ) . 'class-shortcode-button-mce.php';
 
-		foreach ( $styles as $style ) {
-			$head .= '<link type="text/css" rel="stylesheet" href="' . $style . '">';
+		try {
+			$mce = Shortcode_Button_MCE::ajax_parse_shortcode( $_POST, $this );
+			wp_send_json_success( $mce->get_output() );
+		} catch ( Shortcode_Button_Exception $e ) {
+			wp_send_json_error( $e->get_data() );
 		}
-
-		if ( ! empty( $wp_scripts ) ) {
-			$wp_scripts->done = array();
-		}
-
-		ob_start();
-		echo $shortcode;
-
-		$send = array(
-			'head' => $head,
-			'body' => ob_get_clean(),
-		);
-
-		$send = apply_filters( "shortcode_button_parse_mce_view_before_send", $send );
-		$send = apply_filters( "shortcode_button_parse_mce_view_before_send_$slug", $send );
-
-		self::send_json_success( $send );
-	}
-
-	public static function send_json_success( $send ) {
-		wp_send_json_success( $send );
 	}
 
 	/**
