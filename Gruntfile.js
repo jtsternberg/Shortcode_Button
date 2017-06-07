@@ -42,7 +42,7 @@ module.exports = function(grunt) {
 			minify: {
 				expand: true,
 				cwd: '',
-				src: ['css/**/*.css', '!*.min.css'],
+				src: ['css/**/*.css', '!css/**/*.min.css'],
 				dest: '',
 				ext: '.min.css'
 			}
@@ -50,7 +50,7 @@ module.exports = function(grunt) {
 
 		watch: {
 			css: {
-				files: ['css/**/*.css'],
+				files: ['css/**/*.css', '!css/**/*.min.css'],
 				tasks: ['cssmin'],
 			},
 
