@@ -42,7 +42,7 @@ module.exports = function(grunt) {
 			minify: {
 				expand: true,
 				cwd: '',
-				src: ['css/**/*.css'],
+				src: ['css/**/*.css', '!*.min.css'],
 				dest: '',
 				ext: '.min.css'
 			}
