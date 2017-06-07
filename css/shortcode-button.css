@@ -7,9 +7,6 @@
 .scb-form-wrap, .scb-wrap {
 	display: none;
 }
-.scbshow {
-	display: block;
-}
 #scb-modal {
 	position: absolute;
 	top: 15%;
