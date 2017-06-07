@@ -134,8 +134,9 @@ function shortcode_button_only_pages() {
 #### Changelog
 
 * 1.0.7
-	* Introduce `Shortcode_Button_MCE` object for properly handling/parsing the MCE view for ajax, and add that object as an additional property to the `'shortcode_button_parse_mce_view_before_send'` and `"shortcode_button_parse_mce_view_before_send_{$button_slug}"` filters. ((#17)[https://github.com/jtsternberg/Shortcode_Button/issues/17])
+	* Introduce `Shortcode_Button_MCE` object for properly handling/parsing the MCE view for ajax, and add that object as an additional property to the `'shortcode_button_parse_mce_view_before_send'` and `"shortcode_button_parse_mce_view_before_send_{$button_slug}"` filters. ([#17](https://github.com/jtsternberg/Shortcode_Button/issues/17))
 	* Make `text_medium` and `text_small` CMB2 fields work properly. Fixes [#20](https://github.com/jtsternberg/Shortcode_Button/issues/20).
+	* More consistent checkbox field styling. Props [@JiveDig](https://github.com/JiveDig), [#19](https://github.com/jtsternberg/Shortcode_Button/pull/19) (and [#18](https://github.com/jtsternberg/Shortcode_Button/issues/18)).
 
 * 1.0.6
 	* Remove the custom recursive QTags button in the shortcode modal wysiwyg editor. Props (@nonsensecreativity)[https://github.com/nonsensecreativity], (#14)[https://github.com/jtsternberg/Shortcode_Button/pull/14].
