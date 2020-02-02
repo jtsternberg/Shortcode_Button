@@ -1,3 +1,4 @@
+// If wp_sc_buttons exists, use it, otherwise set as empty object.
 window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 ( function( window, document, $, wp, QTags, l10n, btns, undefined ) {
@@ -31,9 +32,9 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 	 *
 	 * @param {document#event:quicktags-init} evt
 	 * @param {object} ed - The current quicktags editor instance
+	 * @see {@link https://github.com/WebDevStudios/WDS-Shortcodes/issues/7|WDS-Shortcodes Issue #7}
 	 * @see {@link https://github.com/WordPress/WordPress/blob/master/wp-includes/js/quicktags.js#L266-L325|WordPress Quicktags}
 	 * @see {@link https://github.com/jtsternberg/Shortcode_Button/blob/master/lib/class-shortcode-button.php#L236-L247|Shortcode Button}
-	 * @see {@link https://github.com/WebDevStudios/WDS-Shortcodes/issues/7|WDS-Shortcodes Issue #7}
 	 */
 	var removeQTagsButton = function( evt, ed ) {
 		var id;
@@ -447,12 +448,17 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 	};
 
 	btns._populateFields = function( evt, _data ) {
+		// The field we will be populating.
 		var $field  = $( evt.target );
+		// Find the row code that is the parent to the current field.
 		var $row    = $field.parents( '[class^="cmb-row cmb-type-"]' );
+		// Remove the classes from the row?
 		var classes = $row.attr( 'class' ).replace( 'cmb-row cmb-type-', '' ).split( ' ' );
+		// Merge _data into an empty object.
 		var data    = $.extend( true, {}, _data );
 		var btn     = data.btn;
 		data.type = classes[0];
+		// If we have a value in a data attribute, keep it, otherwise set to empty.
 		data.value = data.attrs[ data.name ] ? data.attrs[ data.name ] : '';
 
 		// Allow override
@@ -473,7 +479,9 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			case 'multicheck':
 			case 'multicheck_inline':
 			case 'multicheck-inline':
+				// If there is a value. How could this not be? Didn't we just ensure that above?
 				if ( data.value ) {
+					// This errors out if we have an array of values, .replace is a string method.
 					data.value = data.value.replace( /\|~/g, '[' ).replace( /~\|/g, ']' ).replace( /\'/g, '"' );
 					try {
 						data.value = $.parseJSON( data.value );
