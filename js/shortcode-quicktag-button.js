@@ -460,6 +460,10 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		data.type = classes[0];
 		// If we have a value in a data attribute, keep it, otherwise set to empty.
 		data.value = data.attrs[ data.name ] ? data.attrs[ data.name ] : '';
+		// If our value is an array convert it to JSON string.
+		if(Array.isArray(data.value)) {
+			data.value = JSON.stringify(data.value);
+		}
 
 		// Allow override
 		if ( btn.populateField ) {
@@ -479,9 +483,7 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 			case 'multicheck':
 			case 'multicheck_inline':
 			case 'multicheck-inline':
-				// If there is a value. How could this not be? Didn't we just ensure that above?
 				if ( data.value ) {
-					// This errors out if we have an array of values, .replace is a string method.
 					data.value = data.value.replace( /\|~/g, '[' ).replace( /~\|/g, ']' ).replace( /\'/g, '"' );
 					try {
 						data.value = $.parseJSON( data.value );
