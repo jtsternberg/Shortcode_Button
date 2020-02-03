@@ -1,4 +1,3 @@
-// If wp_sc_buttons exists, use it, otherwise set as empty object.
 window.wp_sc_buttons = window.wp_sc_buttons || {};
 
 ( function( window, document, $, wp, QTags, l10n, btns, undefined ) {
