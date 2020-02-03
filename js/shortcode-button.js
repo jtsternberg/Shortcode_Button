@@ -1,4 +1,3 @@
-// If it exists, use wp_sc_buttons object, if it doesn't, set to empty object.
 window.wp_sc_buttons = window.wp_sc_buttons || {};
 window.wp_sc_buttons.visualmode = window.wp_sc_buttons.visualmode || {};
 
@@ -17,7 +16,6 @@ window.wp_sc_buttons.visualmode = window.wp_sc_buttons.visualmode || {};
 				cmd   : button.slug
 			};
 
-			// Check whether the passed icon is an image, dash or font icon.
 			var notImageURL = button.icon.indexOf( '/' ) === -1 && button.icon.indexOf( '.' ) === -1;
 			var isDashIcon  = button.icon.indexOf( 'dashicons' ) > -1;
 			var isFontIcon  = button.icon.indexOf( ' ' ) > -1;
@@ -53,8 +51,6 @@ window.wp_sc_buttons.visualmode = window.wp_sc_buttons.visualmode || {};
 			return buttonArgs;
 		};
 
-
-		// Should be something like tinymce.plugins.BUTTONSLUG_Button
 		tinymce.create( 'tinymce.plugins.'+ button.slug.toUpperCase() +'_Button', {
 
 			init : function( editor ) {

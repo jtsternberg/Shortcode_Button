@@ -448,18 +448,14 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 	};
 
 	btns._populateFields = function( evt, _data ) {
-		// The field we will be populating.
 		var $field  = $( evt.target );
-		// Find the row code that is the parent to the current field.
 		var $row    = $field.parents( '[class^="cmb-row cmb-type-"]' );
-		// Remove the classes from the row?
 		var classes = $row.attr( 'class' ).replace( 'cmb-row cmb-type-', '' ).split( ' ' );
-		// Merge _data into an empty object.
 		var data    = $.extend( true, {}, _data );
 		var btn     = data.btn;
 		data.type = classes[0];
-		// If we have a value in a data attribute, keep it, otherwise set to empty.
 		data.value = data.attrs[ data.name ] ? data.attrs[ data.name ] : '';
+
 		// If our value is an array convert it to JSON string.
 		if(Array.isArray(data.value)) {
 			data.value = JSON.stringify(data.value);
