@@ -31,9 +31,9 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 	 *
 	 * @param {document#event:quicktags-init} evt
 	 * @param {object} ed - The current quicktags editor instance
+	 * @see {@link https://github.com/WebDevStudios/WDS-Shortcodes/issues/7|WDS-Shortcodes Issue #7}
 	 * @see {@link https://github.com/WordPress/WordPress/blob/master/wp-includes/js/quicktags.js#L266-L325|WordPress Quicktags}
 	 * @see {@link https://github.com/jtsternberg/Shortcode_Button/blob/master/lib/class-shortcode-button.php#L236-L247|Shortcode Button}
-	 * @see {@link https://github.com/WebDevStudios/WDS-Shortcodes/issues/7|WDS-Shortcodes Issue #7}
 	 */
 	var removeQTagsButton = function( evt, ed ) {
 		var id;
@@ -454,6 +454,11 @@ window.wp_sc_buttons = window.wp_sc_buttons || {};
 		var btn     = data.btn;
 		data.type = classes[0];
 		data.value = data.attrs[ data.name ] ? data.attrs[ data.name ] : '';
+
+		// If our value is an array convert it to JSON string.
+		if(Array.isArray(data.value)) {
+			data.value = JSON.stringify(data.value);
+		}
 
 		// Allow override
 		if ( btn.populateField ) {
